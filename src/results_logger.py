@@ -6,7 +6,7 @@ from typing import Iterable, Optional, Any
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_RESULTS_CSV = PROJECT_ROOT / "results" / "experimental" / "rag_results.csv"
+DEFAULT_RESULTS_CSV = PROJECT_ROOT / "data" / "results" / "experimental" / "rag_results.csv"
 
 RESULTS_COLUMNS = [
     "implementation",

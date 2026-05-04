@@ -5,16 +5,15 @@ This repository contains multiple Retrieval-Augmented Generation implementations
 ## Project Structure
 
 ```text
-notebooks/              Jupyter notebooks for each RAG implementation
-src/                    Python helper scripts for logging, evaluation, and ground truth
-scripts/                Utility scripts, including Milvus startup script
-config/                 Milvus configuration files
-prompts/                Prompt templates
-data/ground_truth/      Ground-truth evaluation data
-results/experimental/   Generated experiment results, ignored by Git
-results/final/          Final curated results for submission
-docs/                   Project documentation
-volumes/                Local Milvus runtime data, ignored by Git
+notebooks/                      Jupyter notebooks for each RAG implementation
+src/                            Python helper scripts for logging, evaluation, and ground truth
+scripts/                        Utility scripts, including Milvus startup script
+config/                         Milvus configuration files
+data/dummy_data/                OrchestrAI synthetic enterprise corpus (DOCX files)
+data/ground_truth/              Ground-truth evaluation data
+data/results/experimental/      Generated experiment results, ignored by Git
+data/results/final/             Final curated results for submission
+volumes/                        Local Milvus runtime data, ignored by Git
 ```
 
 ## Setup
@@ -78,7 +77,7 @@ Run the notebooks in this order:
 Generated experiment results are saved to:
 
 ```text
-results/experimental/rag_results.csv
+data/results/experimental/rag_results.csv
 ```
 
 ## Evaluation
@@ -92,18 +91,18 @@ python src/deterministic_eval.py
 This creates:
 
 ```text
-results/experimental/deterministic_eval_results.csv
-results/experimental/deterministic_eval_summary.csv
+data/results/experimental/deterministic_eval_results.csv
+data/results/experimental/deterministic_eval_summary.csv
 ```
 
 When results are final, copy them into:
 
 ```text
-results/final/
+data/results/final/
 ```
 
 ## Notes
 
 - The `volumes/` folder contains local Milvus data and is ignored by Git.
-- The `results/experimental/` folder contains generated experiment outputs and is ignored by Git.
-- Only clean, final result files should be committed under `results/final/`.
+- The `data/results/experimental/` folder contains generated experiment outputs and is ignored by Git.
+- Only clean, final result files should be committed under `data/results/final/`.

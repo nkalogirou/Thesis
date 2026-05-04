@@ -39,7 +39,7 @@ dist/
 *.egg-info/
 
 # Generated experiment outputs during development
-/results/experimental/*.csv
+/data/results/experimental/*.csv
 
 # Root-level generated outputs, if accidentally created
 /rag_results.csv
