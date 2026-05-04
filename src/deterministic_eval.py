@@ -109,6 +109,16 @@ def main():
     merged["retrieval_precision"] = [x[1] for x in retrieval_values]
     merged["retrieval_recall"] = [x[2] for x in retrieval_values]
 
+    merged["retrieval_f1"] = merged.apply(
+        lambda row: (
+            2 * row["retrieval_precision"] * row["retrieval_recall"]
+            / (row["retrieval_precision"] + row["retrieval_recall"])
+        ) if (row["retrieval_precision"] + row["retrieval_recall"]) > 0 else 0.0,
+        axis=1,
+    )
+
+    merged["answer_length"] = merged["generated_answer_norm"].apply(lambda x: len(x.split()))
+
     OUTPUT_CSV.parent.mkdir(parents=True, exist_ok=True)
     merged.to_csv(OUTPUT_CSV, index=False)
 
@@ -122,6 +132,11 @@ def main():
                 "retrieval_hit",
                 "retrieval_precision",
                 "retrieval_recall",
+                "retrieval_f1",
+                "answer_length",
+                "indexing_time_s",
+                "retrieval_time_s",
+                "generation_time_s",
             ]
         ]
         .mean()
