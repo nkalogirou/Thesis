@@ -5,15 +5,61 @@ This repository contains multiple Retrieval-Augmented Generation implementations
 ## Project Structure
 
 ```text
-notebooks/                      Jupyter notebooks for each RAG implementation
-src/                            Python helper scripts for logging, evaluation, and ground truth
-scripts/                        Utility scripts, including Milvus startup script
-config/                         Milvus configuration files
-data/dummy_data/                OrchestrAI synthetic enterprise corpus (DOCX files)
-data/ground_truth/              Ground-truth evaluation data
-data/results/experimental/      Generated experiment results, ignored by Git
-data/results/final/             Final curated results for submission
-volumes/                        Local Milvus runtime data, ignored by Git
+.
+├── notebooks/
+│   ├── rag_basic.ipynb                 Baseline RAG with in-memory retrieval
+│   ├── rag_vectordb.ipynb              Dense retrieval using Milvus
+│   ├── rag_vectordb_tuned.ipynb        VectorDB with tuned chunking parameters
+│   ├── rag_reranker.ipynb              Dense retrieval + cross-encoder reranking
+│   ├── rag_hybrid.ipynb                Hybrid retrieval (dense + BM25)
+│   ├── rag_hybrid_&_rerank.ipynb       Hybrid retrieval + reranking
+│   └── rag_visualizations.ipynb        Charts and figures for the thesis
+│
+├── src/
+│   ├── results_logger.py               Shared CSV logging for all notebooks
+│   ├── ground_truth_builder.py         Generates ground-truth template from results
+│   └── deterministic_eval.py           Automated evaluation (ROUGE, BERTScore, etc.)
+│
+├── scripts/
+│   └── standalone_embed.sh             Milvus start/stop/restart script
+│
+├── config/
+│   ├── embedEtcd.yaml                  Milvus etcd configuration
+│   └── user.yaml                       Milvus user configuration
+│
+├── data/
+│   ├── dummy_data/                     OrchestrAI synthetic enterprise corpus
+│   │   ├── Customer Support/           5 DOCX files
+│   │   ├── Engineering/                5 DOCX files
+│   │   ├── Finance/                    5 DOCX files
+│   │   ├── HR/                         5 DOCX files
+│   │   ├── IT/                         5 DOCX files
+│   │   ├── Logistics/                  5 DOCX files
+│   │   ├── Product/                    5 DOCX files
+│   │   ├── Q&A Hanbooks/              10 DOCX files (one per department)
+│   │   ├── Sales/                      5 DOCX files
+│   │   └── Security/                   5 DOCX files
+│   │
+│   ├── ground_truth/
+│   │   └── rag_ground_truth.csv        Manual scores and reference answers
+│   │
+│   └── results/
+│       ├── experimental/               Generated outputs, ignored by Git
+│       ├── final/                      Curated results for submission
+│       │   ├── rag_results.csv                 Raw experiment results
+│       │   ├── deterministic_eval_results.csv  Per-scenario evaluation scores
+│       │   └── deterministic_eval_summary.csv  Summary table per pipeline
+│       └── figures/                    Exported charts
+│           ├── answer_quality.png
+│           ├── retrieval_quality.png
+│           ├── scenario_heatmap.png
+│           ├── timing_breakdown.png
+│           └── radar_chart.png
+│
+├── volumes/                            Milvus runtime data, ignored by Git
+├── requirements.txt                    Python dependencies
+├── .gitignore
+└── README.md
 ```
 
 ## Setup
@@ -83,10 +129,25 @@ data/results/experimental/rag_results.csv
 
 ## Evaluation
 
+### Manual Ground Truth (Strict)
+
+Manual evaluation lives in:
+
+```text
+data/ground_truth/rag_ground_truth.csv
+```
+
+For each `(implementation, scenario_id)` row, we derive `ground_truth_answer` **only from** the DOCX files in `data/dummy_data/` and then score `generated_answer` strictly using:
+
+- `manual_score`: `1.0` (correct), `0.5` (partially correct), `0.0` (incorrect)
+- `manual_label`: `correct`, `partially_correct`, `incorrect`
+
+The fields `supporting_documents` and `manual_notes` must be evidence-based (only filenames that were actually used; no invented facts).
+
 Run deterministic evaluation with:
 
 ```bash
-python src/deterministic_eval.py
+python3 src/deterministic_eval.py
 ```
 
 This creates:
