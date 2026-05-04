@@ -56,6 +56,7 @@ def build_ground_truth_sheet(
             f"{ground_truth_path} already exists. Use overwrite=True to replace it."
         )
 
+    ground_truth_path.parent.mkdir(parents=True, exist_ok=True)
     with open(ground_truth_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=GROUND_TRUTH_COLUMNS)
         writer.writeheader()

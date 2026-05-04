@@ -52,6 +52,7 @@ def ensure_results_file(results_csv: str | Path = DEFAULT_RESULTS_CSV) -> Path:
     results_path = Path(results_csv)
 
     if not results_path.exists():
+        results_path.parent.mkdir(parents=True, exist_ok=True)
         with open(results_path, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=RESULTS_COLUMNS)
             writer.writeheader()

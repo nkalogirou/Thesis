@@ -109,6 +109,7 @@ def main():
     merged["retrieval_precision"] = [x[1] for x in retrieval_values]
     merged["retrieval_recall"] = [x[2] for x in retrieval_values]
 
+    OUTPUT_CSV.parent.mkdir(parents=True, exist_ok=True)
     merged.to_csv(OUTPUT_CSV, index=False)
 
     summary = (
