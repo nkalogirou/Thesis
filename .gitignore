@@ -39,9 +39,12 @@ dist/
 *.egg-info/
 
 # Generated experiment outputs during development
-rag_results.csv
-deterministic_eval_results.csv
-deterministic_eval_summary.csv
+/results/experimental/*.csv
+
+# Root-level generated outputs, if accidentally created
+/rag_results.csv
+/deterministic_eval_results.csv
+/deterministic_eval_summary.csv
 
 # Large archives
 *.zip
