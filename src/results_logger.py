@@ -5,7 +5,8 @@ from pathlib import Path
 from typing import Iterable, Optional, Any
 
 
-DEFAULT_RESULTS_CSV = Path("rag_results.csv")
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_RESULTS_CSV = PROJECT_ROOT / "results" / "experimental" / "rag_results.csv"
 
 RESULTS_COLUMNS = [
     "implementation",

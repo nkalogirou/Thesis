@@ -4,8 +4,10 @@ import csv
 from pathlib import Path
 
 
-RESULTS_CSV = Path("rag_results.csv")
-GROUND_TRUTH_CSV = Path("rag_ground_truth.csv")
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+RESULTS_CSV = PROJECT_ROOT / "results" / "experimental" / "rag_results.csv"
+GROUND_TRUTH_CSV = PROJECT_ROOT / "data" / "ground_truth" / "rag_ground_truth.csv"
 
 GROUND_TRUTH_COLUMNS = [
     "implementation",

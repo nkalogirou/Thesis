@@ -10,10 +10,12 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-RESULTS_CSV = Path("rag_results.csv")
-GROUND_TRUTH_CSV = Path("rag_ground_truth.csv")
-OUTPUT_CSV = Path("deterministic_eval_results.csv")
-SUMMARY_CSV = Path("deterministic_eval_summary.csv")
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+RESULTS_CSV = PROJECT_ROOT / "results" / "experimental" / "rag_results.csv"
+GROUND_TRUTH_CSV = PROJECT_ROOT / "data" / "ground_truth" / "rag_ground_truth.csv"
+OUTPUT_CSV = PROJECT_ROOT / "results" / "experimental" / "deterministic_eval_results.csv"
+SUMMARY_CSV = PROJECT_ROOT / "results" / "experimental" / "deterministic_eval_summary.csv"
 
 
 def normalize_text(text: str) -> str:
