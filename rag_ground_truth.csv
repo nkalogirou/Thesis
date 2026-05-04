@@ -1,0 +1,235 @@
+implementation,scenario_id,question,generated_answer,ground_truth_answer,supporting_documents,manual_score,manual_label,manual_notes
+basic,b1,What is the first-response SLA for a Sev-1 support incident?,"The target first-response SLA for priority cases, specifically Sev-1 incidents, is 15 minutes. (Source: TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx)","For a customer support Sev-1 incident, the first-response target is 15 minutes; the clock starts when the case is correctly classified. VAL-CS-001 also classifies Sev-1 as a critical production outage at one or more active sites with a 15-minute response target.",TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx | VAL-CS-001_Severity_Matrix.docx,1.0,correct,Correctly states the 15-minute Sev-1 support first-response target without unsupported additions.
+basic,b2,What steps must be completed before a new employee is considered ready for day one at OrchestrAI?,"According to the Day-One Onboarding Checklist (VAL-HR-001_Day_One_Onboarding_Checklist.docx), the following tasks must be completed before a new employee is considered ready for day one:
+
+1. Employee record created in PeopleCore
+2. Laptop and baseline tools requested
+3. Badge / facility access request initiated (for office-based staff)
+4. Role-based access submitted through AccessHub
+5. Orientation invite sent
+
+These tasks are listed under the ""Pre-start validation"" section of the checklist, with specific owners and due dates assigned to each task.","The day-one readiness checklist requires the pre-start validation tasks to be complete: employee record created in PeopleCore; laptop and baseline tools requested; badge/facility access request initiated for office-based staff; role-based access submitted through AccessHub; orientation invite sent; and manager ramp plan confirmed. The day-one completion rules also require baseline credentials and MFA, payroll/tax forms complete or formally escalated, manager confirmation of first-week priorities/meetings, and same-day escalation of any security, payroll, or access prerequisite.",VAL-HR-001_Day_One_Onboarding_Checklist.docx,0.5,partially_correct,"Partially correct: lists most pre-start validation tasks, but omits manager ramp plan confirmation and the day-one completion rules."
+basic,b3,"A new engineer starts on Monday, but their laptop has not arrived and their required access is still pending. Which teams are involved and what should happen next?","Based on the provided context, if a new hire's laptop has not arrived and their required access is still pending, the following teams are involved:
+
+* IT Service Desk Lead (as per the Decision and Escalation Reference table, they will be notified when there is no assigned device for a start date within 72 hours)
+* Regional IT / Logistics (they should escalate if the shipment delay affects the start date)
+
+The next steps that should happen next are:
+
+* The hiring manager should be notified by the IT Service Desk Lead.
+* The regional IT manager should also be informed to assist in resolving the issue.
+
+Note: This is based on the provided context and specific policies outlined in the Decision and Escalation Reference table.","For a start-date laptop/access risk, the involved owners include the hiring manager/HRIS, IT asset coordinator/Endpoint Engineering/IT Service Desk Lead, Site IT/ship desk, Regional IT/Logistics, the manager through AccessHub, and Security if privileged access is involved. Next, if the start date is within 72 hours and no device is assigned, the IT Service Desk Lead must notify the hiring manager and regional IT manager; shipment or damaged-delivery risk must be escalated by Regional IT/Logistics when it affects the start date. Pending access should be handled through AccessHub, and any missing prerequisite affecting security, payroll, or access must be escalated the same day.",VAL-IT-001_Laptop_Provisioning_FAQ.docx | VAL-HR-001_Day_One_Onboarding_Checklist.docx,0.5,partially_correct,"Partially correct: identifies IT Service Desk Lead and Regional IT/Logistics and notification, but omits AccessHub/manager/Security handling for pending access and several device-flow owners."
+basic,b4,Can OrchestrAI make an urgent hardware purchase without following the normal PO workflow if a warehouse outage is at risk?,"According to VAL-FIN-005_Emergency_Procurement_Exception_Memo.docx, yes, OrchestrAI can make an urgent hardware purchase without following the normal PO workflow if a warehouse outage is at risk. The memo states that emergency purchases may proceed when waiting for the full standard workflow would create material operational, security, or customer impact.
+
+Specifically, it mentions that an exception criteria includes ""Delay would create a customer outage, security exposure, or warehouse-operational failure."" In this case, OrchestrAI can follow the emergency procurement process outlined in VAL-FIN-005_Emergency_Procurement_Exception_Memo.docx.","Yes. Emergency purchases may proceed when waiting for the full standard workflow would create material operational, security, or customer impact, including a customer outage or warehouse-operational failure, if the standard approval path cannot complete in time and a named executive or delegated approver accepts accountability. The exception still requires business justification and impact statement, approval record, follow-up PO/reconciliation, and post-event review within 5 business days.",VAL-FIN-005_Emergency_Procurement_Exception_Memo.docx,1.0,correct,Correctly answers yes and cites the emergency-procurement exception criterion for customer outage or warehouse-operational failure; no material unsupported claim.
+basic,b5,"A customer renewal is at risk because support cases are recurring, a requested feature is still unavailable, and replacement hardware is delayed. What should OrchestrAI do next, and which teams must be involved?","Based on the provided context, since the question involves multiple teams and processes, we'll break it down step by step.
+
+First, let's identify the key issues:
+
+1. Recurring support cases (likely P1 or P2 priority based on the SLA Reference in TEAMQA-IT-001_OrchestrAI_IT_Workplace_and_Service_Desk_Handbook.docx)
+2. Unavailable requested feature (which might require escalation to Product/PMO as per VAL-CS-003_Escalation_Handoff_Note.docx)
+3. Delayed replacement hardware (which might require escalation to Logistics as per VAL-CS-003_Escalation_Handoff_Note.docx)
+
+Given these issues, the next steps would be:
+
+1. Escalate the recurring support cases to Engineering for investigation and resolution.
+2. Escalate the unavailable requested feature to Product/PMO for a roadmap decision or formal change request.
+3. Escalate the delayed replacement hardware to Logistics for resolution.
+
+The teams involved in this process would be:
+
+* Support (for initial case handling)
+* Engineering (for investigating and resolving recurring support cases)
+* Product/PMO (for addressing unavailable requested features)
+* Logistics (for resolving delayed replacement hardware)
+
+Additionally, Customer Success should be informed about the renewal risk signals to ensure proactive planning for recovery.
+
+The quality bar for a handoff as per VAL-CS-003_Escalation_Handoff_Note.docx should also be followed to ensure that all necessary information is provided during the escalation process.","OrchestrAI should treat this as material renewal risk and open a recovery plan/executive review with a problem statement, customer-visible impact, named owners, milestone dates, dependencies, and exact executive update cadence, reviewed weekly until the account returns to yellow or green status. Customer Success/CS manager/CSM owns renewal readiness and recovery planning, while Support owns case handling. Route blockers to the function that can remove them: Engineering for recurring incident patterns or product defects, Product/PMO for the unavailable requested feature/roadmap or formal change request, and Logistics for delayed replacement hardware; involve CS leadership/account team when renewal risk is material.",VAL-CS-004_Renewal_Risk_Signals_Brief.docx | VAL-CS-003_Escalation_Handoff_Note.docx | TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx,0.5,partially_correct,"Partially correct: routes recurring cases, feature issue, and hardware delay to mostly correct teams, but omits the required recovery plan/executive review details and adds an unsupported P1/P2 framing from IT."
+vectordb,v1,What is the first-response SLA for a Sev-1 support incident?,"The target first-response SLA for priority cases, specifically Sev-1 incidents, is 15 minutes. This is stated in multiple sources:
+
+* TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx: ""Baseline targets are 15 minutes for Sev-1...""
+* VAL-CS-001_Severity_Matrix.docx: ""Sev-1, **Response target** = 15 minutes.""
+* TEAMQA-IT-001_OrchestrAI_IT_Workplace_and_Service_Desk_Handbook.docx: ""P1, **First Response** = 15 minutes.""","For a customer support Sev-1 incident, the first-response target is 15 minutes; the clock starts when the case is correctly classified. VAL-CS-001 also classifies Sev-1 as a critical production outage at one or more active sites with a 15-minute response target.",TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx | VAL-CS-001_Severity_Matrix.docx,1.0,correct,"Correctly states the 15-minute Sev-1 support first-response target. The extra IT P1 reference is not needed, but it does not change the answer."
+vectordb,v2,What steps must be completed before a new employee is considered ready for day one at OrchestrAI?,"According to the Day-One Onboarding Checklist (VAL-HR-001_Day_One_Onboarding_Checklist.docx), the following steps must be completed before a new employee is considered ready for day one:
+
+1. The new hire must be able to sign in with baseline credentials and MFA.
+2. Payroll and tax forms must be complete or formally escalated.
+3. The manager must confirm first-week priorities and required meetings.
+4. Any missing prerequisite that affects security, payroll, or access must be escalated the same day.
+
+Additionally, according to the HR and People Operations Handbook (TEAMQA-HR-001_OrchestrAI_HR_and_People_Operations_Handbook.docx), a new hire is considered onboarding-complete after required documents are recorded, payroll setup is confirmed, IT has completed core access and device delivery, orientation tasks are finished, and the hiring manager has acknowledged the role-specific ramp plan.
+
+Document citations:
+
+* VAL-HR-001_Day_One_Onboarding_Checklist.docx
+* TEAMQA-HR-001_OrchestrAI_HR_and_People_Operations_Handbook.docx","The day-one readiness checklist requires the pre-start validation tasks to be complete: employee record created in PeopleCore; laptop and baseline tools requested; badge/facility access request initiated for office-based staff; role-based access submitted through AccessHub; orientation invite sent; and manager ramp plan confirmed. The day-one completion rules also require baseline credentials and MFA, payroll/tax forms complete or formally escalated, manager confirmation of first-week priorities/meetings, and same-day escalation of any security, payroll, or access prerequisite.",VAL-HR-001_Day_One_Onboarding_Checklist.docx,0.5,partially_correct,"Partially correct: captures the day-one completion rules and some handbook completion criteria, but omits the concrete pre-start validation tasks such as employee record, laptop request, access request, orientation invite, and manager ramp plan."
+vectordb,v3,"A new engineer starts on Monday, but their laptop has not arrived and their required access is still pending. Which teams are involved and what should happen next?","The retrieved context does not explicitly contain the rule or exception needed to answer the question about which teams are involved and what should happen next in this specific situation.
+
+However, based on the provided information, we can infer that the following teams may be involved:
+
+* IT (for laptop provisioning)
+* People Ops (for employee record creation and badge/facility access requests)
+* Endpoint Engineering (for staging devices with non-standard software or admin rights)
+
+As for what should happen next, it is recommended to escalate the issue to the relevant team(s) responsible for resolving the problem. In this case, IT may need to investigate the delay in laptop delivery, while People Ops and/or Endpoint Engineering may be involved in resolving the access request.
+
+However, please note that the retrieved context does not provide explicit instructions or escalation procedures for this specific situation.","For a start-date laptop/access risk, the involved owners include the hiring manager/HRIS, IT asset coordinator/Endpoint Engineering/IT Service Desk Lead, Site IT/ship desk, Regional IT/Logistics, the manager through AccessHub, and Security if privileged access is involved. Next, if the start date is within 72 hours and no device is assigned, the IT Service Desk Lead must notify the hiring manager and regional IT manager; shipment or damaged-delivery risk must be escalated by Regional IT/Logistics when it affects the start date. Pending access should be handled through AccessHub, and any missing prerequisite affecting security, payroll, or access must be escalated the same day.",VAL-IT-001_Laptop_Provisioning_FAQ.docx | VAL-HR-001_Day_One_Onboarding_Checklist.docx,0.5,partially_correct,"Partially correct: identifies some involved teams and general escalation, but incorrectly says explicit instructions are absent and misses the 72-hour no-device notification rule, Regional IT/Logistics delivery trigger, and AccessHub same-day escalation."
+vectordb,v4,Can OrchestrAI make an urgent hardware purchase without following the normal PO workflow if a warehouse outage is at risk?,"According to VAL-FIN-005_Emergency_Procurement_Exception_Memo.docx, yes. An emergency procurement exception can be made if a standard approval path cannot complete in time to avoid material harm, which includes a warehouse-operational failure such as an outage. Additionally, a named executive or delegated approver must accept accountability for the exception.","Yes. Emergency purchases may proceed when waiting for the full standard workflow would create material operational, security, or customer impact, including a customer outage or warehouse-operational failure, if the standard approval path cannot complete in time and a named executive or delegated approver accepts accountability. The exception still requires business justification and impact statement, approval record, follow-up PO/reconciliation, and post-event review within 5 business days.",VAL-FIN-005_Emergency_Procurement_Exception_Memo.docx,1.0,correct,Correctly answers yes and includes the emergency exception criteria plus executive/delegated approver accountability.
+vectordb,v5,"A customer renewal is at risk because support cases are recurring, a requested feature is still unavailable, and replacement hardware is delayed. What should OrchestrAI do next, and which teams must be involved?","Based on the provided context, specifically from [Source: TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx], common risk indicators for renewal risk include unresolved critical defects, repeated SLA misses, poor adoption of core workflows, stakeholder turnover, delayed site expansion, and negative executive sentiment.
+
+Given the situation described:
+
+* Recurring support cases indicate potential issues with incident handling or resolution.
+* The requested feature still being unavailable suggests a possible application defect or API dependency failure, which may require escalation to Engineering.
+* Delayed replacement hardware indicates potential issues with logistics or procurement.
+
+OrchestrAI should next assess and address these specific issues. 
+
+The teams that must be involved are:
+
+* Support: To review and resolve the recurring support cases and ensure proper incident handling.
+* Engineering: To investigate and potentially escalate the unresolved critical defects and requested feature availability issues.
+* Logistics/Procurement: To expedite the replacement hardware delivery.
+
+Additionally, Customer Success should be informed to assess the overall customer health score, churn risk, executive concern, and recovery planning.","OrchestrAI should treat this as material renewal risk and open a recovery plan/executive review with a problem statement, customer-visible impact, named owners, milestone dates, dependencies, and exact executive update cadence, reviewed weekly until the account returns to yellow or green status. Customer Success/CS manager/CSM owns renewal readiness and recovery planning, while Support owns case handling. Route blockers to the function that can remove them: Engineering for recurring incident patterns or product defects, Product/PMO for the unavailable requested feature/roadmap or formal change request, and Logistics for delayed replacement hardware; involve CS leadership/account team when renewal risk is material.",VAL-CS-004_Renewal_Risk_Signals_Brief.docx | VAL-CS-003_Escalation_Handoff_Note.docx | TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx,0.5,partially_correct,"Partially correct: identifies renewal risk and some teams, but misses Product/PMO for the feature/roadmap issue, omits the formal recovery plan/executive review requirements, and treats the unavailable feature as an Engineering issue without support."
+reranker,r1,What is the first-response SLA for a Sev-1 support incident?,"The target first-response SLA for a Sev-1 support incident is 15 minutes. 
+
+[Source: TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx]
+Customer Success and Support Handbook
+Service targets and escalation guide
+Sev-1 first response, **Target** = 15 min.
+
+Additionally, the document TEAMQA-ENG-001_OrchestrAI_Engineering_Platform_and_Edge_Systems_Handbook.docx also mentions that for a Sev-1 incident, the target response is within 10 minutes.
+SEV-1 incident, **Target response** = Within 10 min.
+
+However, it's worth noting that the document TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx specifically states the target first-response SLA for a Sev-1 support incident as 15 minutes.","For a customer support Sev-1 incident, the first-response target is 15 minutes; the clock starts when the case is correctly classified. VAL-CS-001 also classifies Sev-1 as a critical production outage at one or more active sites with a 15-minute response target.",TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx | VAL-CS-001_Severity_Matrix.docx,1.0,correct,Correctly gives the 15-minute support first-response SLA. The Engineering 10-minute response detail is extraneous but explicitly distinguished from the support SLA.
+reranker,r2,What steps must be completed before a new employee is considered ready for day one at OrchestrAI?,"According to the Day-One Onboarding Checklist (VAL-HR-001), the following steps must be completed before a new employee is considered ready for day one:
+
+1. The new hire must be able to sign in with baseline credentials and MFA.
+2. Payroll and tax forms must be complete or formally escalated.
+3. The manager must confirm first-week priorities and required meetings.
+4. Any missing prerequisite that affects security, payroll, or access must be escalated the same day.
+
+[Source: VAL-HR-001_Day_One_Onboarding_Checklist.docx]","The day-one readiness checklist requires the pre-start validation tasks to be complete: employee record created in PeopleCore; laptop and baseline tools requested; badge/facility access request initiated for office-based staff; role-based access submitted through AccessHub; orientation invite sent; and manager ramp plan confirmed. The day-one completion rules also require baseline credentials and MFA, payroll/tax forms complete or formally escalated, manager confirmation of first-week priorities/meetings, and same-day escalation of any security, payroll, or access prerequisite.",VAL-HR-001_Day_One_Onboarding_Checklist.docx,0.5,partially_correct,"Partially correct: includes the day-one completion rules, but misses the required pre-start validation tasks including employee record, laptop/tools request, access request, orientation invite, and manager ramp plan."
+reranker,r3,"A new engineer starts on Monday, but their laptop has not arrived and their required access is still pending. Which teams are involved and what should happen next?","The retrieved context is insufficient to provide a complete answer to your question. However, based on the provided information:
+
+* The hiring manager started the request through the onboarding workflow.
+* IT does not build a device against 1 business day.
+* If there's a shipment delay or damaged delivery, Regional IT/Logistics is the Primary Owner and escalation should be triggered when delivery risk affects start date.
+
+To determine the next steps, it would be necessary to have more information about the current status of the laptop request and the specific issues with the new engineer's access.","For a start-date laptop/access risk, the involved owners include the hiring manager/HRIS, IT asset coordinator/Endpoint Engineering/IT Service Desk Lead, Site IT/ship desk, Regional IT/Logistics, the manager through AccessHub, and Security if privileged access is involved. Next, if the start date is within 72 hours and no device is assigned, the IT Service Desk Lead must notify the hiring manager and regional IT manager; shipment or damaged-delivery risk must be escalated by Regional IT/Logistics when it affects the start date. Pending access should be handled through AccessHub, and any missing prerequisite affecting security, payroll, or access must be escalated the same day.",VAL-IT-001_Laptop_Provisioning_FAQ.docx | VAL-HR-001_Day_One_Onboarding_Checklist.docx,0.5,partially_correct,"Partially correct: includes Regional IT/Logistics escalation for delivery risk, but is incomplete, says more information is needed, omits pending access handling, and contains an incoherent unsupported phrase about IT not building a device against 1 business day."
+reranker,r4,Can OrchestrAI make an urgent hardware purchase without following the normal PO workflow if a warehouse outage is at risk?,"The retrieved context does not explicitly contain information about making urgent hardware purchases or bypassing the normal Purchase Order (PO) workflow. However, it mentions that the Logistics and Field Fulfillment team ensures that OrchestrAI hardware and deployment kits move from inbound receiving to customer-ready shipment without losing traceability, asset integrity, or installation timing.
+
+Since there is no specific information about making urgent purchases in case of a warehouse outage, I must state that the retrieved context is insufficient to provide an accurate answer.","Yes. Emergency purchases may proceed when waiting for the full standard workflow would create material operational, security, or customer impact, including a customer outage or warehouse-operational failure, if the standard approval path cannot complete in time and a named executive or delegated approver accepts accountability. The exception still requires business justification and impact statement, approval record, follow-up PO/reconciliation, and post-event review within 5 business days.",VAL-FIN-005_Emergency_Procurement_Exception_Memo.docx,0.0,incorrect,Incorrect: says the context is insufficient and does not identify the emergency procurement exception that allows urgent purchases for warehouse-operational failure risk.
+reranker,r5,"A customer renewal is at risk because support cases are recurring, a requested feature is still unavailable, and replacement hardware is delayed. What should OrchestrAI do next, and which teams must be involved?","Based on the provided context, the following actions should be taken:
+
+The customer's renewal is at risk due to recurring support cases, an unavailable requested feature, and delayed replacement hardware.
+
+According to [TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx], common risk indicators include unresolved critical defects, repeated SLA misses, poor adoption of core workflows, stakeholder turnover, delayed site expansion, and negative executive sentiment. In this case, the customer's situation matches several of these indicators.
+
+The next steps should be taken by the Customer Success team:
+
+1. Identify the root cause of the issues: The Customer Success team should work with the Support team to determine the underlying causes of the recurring support cases, unavailable feature, and delayed hardware replacement.
+2. Develop a recovery plan: Once the root causes are identified, the Customer Success team should develop a recovery plan that includes short-term mitigation strategies and long-term corrective actions.
+3. Communicate with the customer: The Customer Success team should communicate the recovery plan to the customer and ensure they understand the steps being taken to address their issues.
+
+According to [TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx], the handoff from onboarding to steady-state support includes open risks, known product gaps, and trained stakeholders. In this case, the Customer Success team should ensure that these aspects are addressed as part of the recovery plan.
+
+The Support team is also involved in addressing the recurring support cases and unavailable feature. According to [TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx], Support owns incident handling, case triage, troubleshooting, and documented resolution.
+
+Therefore, the next steps should be taken by both the Customer Success team and the Support team, working together to address the customer's issues.","OrchestrAI should treat this as material renewal risk and open a recovery plan/executive review with a problem statement, customer-visible impact, named owners, milestone dates, dependencies, and exact executive update cadence, reviewed weekly until the account returns to yellow or green status. Customer Success/CS manager/CSM owns renewal readiness and recovery planning, while Support owns case handling. Route blockers to the function that can remove them: Engineering for recurring incident patterns or product defects, Product/PMO for the unavailable requested feature/roadmap or formal change request, and Logistics for delayed replacement hardware; involve CS leadership/account team when renewal risk is material.",VAL-CS-004_Renewal_Risk_Signals_Brief.docx | VAL-CS-003_Escalation_Handoff_Note.docx | TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx,0.5,partially_correct,"Partially correct: mentions Customer Success, Support, and recovery planning, but misses required Engineering, Product/PMO, and Logistics routing for the specific blockers."
+hybrid,h1,What is the first-response SLA for a Sev-1 support incident?,"The target first-response SLA for a Sev-1 support incident is 15 minutes. 
+
+[Source: TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx]
+Customer Success and Support Handbook
+Service targets and escalation guide
+Sev-1 first response, **Target** = 15 min.
+
+Additionally, the document TEAMQA-ENG-001_OrchestrAI_Engineering_Platform_and_Edge_Systems_Handbook.docx also mentions that for a Sev-1 incident, the target response is within 10 minutes.
+SEV-1 incident, **Target response** = Within 10 min.
+
+However, it's worth noting that the document TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx specifically states the target first-response SLA for a Sev-1 support incident as 15 minutes.","For a customer support Sev-1 incident, the first-response target is 15 minutes; the clock starts when the case is correctly classified. VAL-CS-001 also classifies Sev-1 as a critical production outage at one or more active sites with a 15-minute response target.",TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx | VAL-CS-001_Severity_Matrix.docx,1.0,correct,Correctly gives the 15-minute support first-response SLA. The Engineering 10-minute response detail is extraneous but explicitly distinguished from the support SLA.
+hybrid,h2,What steps must be completed before a new employee is considered ready for day one at OrchestrAI?,"According to the Day-One Onboarding Checklist (VAL-HR-001), the minimum tasks that must be complete before an OrchestrAI employee can be considered ready for day-one onboarding are not explicitly listed in the provided context. However, we can infer some steps from other sources.
+
+From the HR and People Operations Handbook (TEAMQA-HR-001), we know that a new hire is considered onboarding-complete after required documents are recorded, payroll setup is confirmed, IT has completed core access and device delivery, and orientation is completed.
+
+Additionally, from the Laptop Provisioning FAQ (VAL-IT-001), we understand that IT must complete core access and device delivery before the device leaves IT custody.
+
+Therefore, based on the available information, the following steps must be completed before a new employee is considered ready for day one at OrchestrAI:
+
+1. Required documents are recorded
+2. Payroll setup is confirmed
+3. IT completes core access
+4. IT delivers the device
+5. Orientation is completed
+
+Please note that this answer is based on the provided context and may not be an exhaustive list of all necessary steps.","The day-one readiness checklist requires the pre-start validation tasks to be complete: employee record created in PeopleCore; laptop and baseline tools requested; badge/facility access request initiated for office-based staff; role-based access submitted through AccessHub; orientation invite sent; and manager ramp plan confirmed. The day-one completion rules also require baseline credentials and MFA, payroll/tax forms complete or formally escalated, manager confirmation of first-week priorities/meetings, and same-day escalation of any security, payroll, or access prerequisite.",VAL-HR-001_Day_One_Onboarding_Checklist.docx,0.5,partially_correct,"Partially correct: gives broad onboarding-complete items, but falsely says the minimum tasks are not explicitly listed and omits several checklist-specific pre-start validation items and day-one rules."
+hybrid,h3,"A new engineer starts on Monday, but their laptop has not arrived and their required access is still pending. Which teams are involved and what should happen next?","The retrieved context does not explicitly contain the rule or exception needed to answer the question regarding which teams are involved and what should happen next in case of a delayed laptop delivery for an engineer.
+
+However, based on the provided information, we can infer that the hiring manager/HRIS is responsible for request intake, and IT asset coordinator is responsible for device selection. 
+
+The context also mentions that standard new-hire laptop requests should be present in the hiring workflow at least seven business days before the employee start date. Since the engineer's start date is on Monday, it appears that the request was not made in a timely manner.
+
+To resolve this issue, we would need to escalate the matter to the relevant teams for further investigation and resolution. However, the retrieved context does not provide specific instructions or procedures for handling such situations.
+
+The context mentions that IT does not build a device against an employee record until it is created in AtlasDesk, but it does not specify what should happen if the laptop has not arrived by the start date.
+
+Therefore, we cannot provide a definitive answer to the question based on the provided information.","For a start-date laptop/access risk, the involved owners include the hiring manager/HRIS, IT asset coordinator/Endpoint Engineering/IT Service Desk Lead, Site IT/ship desk, Regional IT/Logistics, the manager through AccessHub, and Security if privileged access is involved. Next, if the start date is within 72 hours and no device is assigned, the IT Service Desk Lead must notify the hiring manager and regional IT manager; shipment or damaged-delivery risk must be escalated by Regional IT/Logistics when it affects the start date. Pending access should be handled through AccessHub, and any missing prerequisite affecting security, payroll, or access must be escalated the same day.",VAL-IT-001_Laptop_Provisioning_FAQ.docx | VAL-HR-001_Day_One_Onboarding_Checklist.docx,0.0,incorrect,"Incorrect/seriously incomplete: it says no definitive answer is available, omits the explicit 72-hour and delivery-risk escalation rules and access escalation rules, and adds an unsupported assumption that the request was not timely."
+hybrid,h4,Can OrchestrAI make an urgent hardware purchase without following the normal PO workflow if a warehouse outage is at risk?,"According to the Finance and Procurement Handbook [TEAMQA-FIN-001_OrchestrAI_Finance_and_Procurement_Handbook.docx], a purchase order is required for most hardware or implementation-related purchases that need receiving and invoice matching. However, it does not explicitly state whether an urgent hardware purchase can be made without following the normal PO workflow in case of a warehouse outage.
+
+The retrieved context is insufficient to provide a definitive answer.","Yes. Emergency purchases may proceed when waiting for the full standard workflow would create material operational, security, or customer impact, including a customer outage or warehouse-operational failure, if the standard approval path cannot complete in time and a named executive or delegated approver accepts accountability. The exception still requires business justification and impact statement, approval record, follow-up PO/reconciliation, and post-event review within 5 business days.",VAL-FIN-005_Emergency_Procurement_Exception_Memo.docx,0.0,incorrect,Incorrect: says the context is insufficient and misses the emergency procurement exception that directly answers yes for warehouse-operational failure risk.
+hybrid,h5,"A customer renewal is at risk because support cases are recurring, a requested feature is still unavailable, and replacement hardware is delayed. What should OrchestrAI do next, and which teams must be involved?","Based on the provided context, it appears that there is no specific instruction or policy outlined for handling customer renewal risks due to recurring support cases, unavailable features, and delayed hardware replacements.
+
+However, the Renewal Risk Signals Brief (VAL-CS-004) mentions that OrchestrAI Customer Success teams use certain signals to identify accounts at risk before a renewal or expansion cycle. These signals include health score, churn risk, executive concern, and recovery planning.
+
+Given this information, it is likely that OrchestrAI would need to involve the Customer Success & Support team (Department: Customer Success & Support) in addressing the customer's renewal risk. However, without further guidance on specific procedures or policies for handling such situations, it is difficult to provide a more detailed answer.
+
+The retrieved context is insufficient to determine the exact next steps and teams involved in addressing this situation.","OrchestrAI should treat this as material renewal risk and open a recovery plan/executive review with a problem statement, customer-visible impact, named owners, milestone dates, dependencies, and exact executive update cadence, reviewed weekly until the account returns to yellow or green status. Customer Success/CS manager/CSM owns renewal readiness and recovery planning, while Support owns case handling. Route blockers to the function that can remove them: Engineering for recurring incident patterns or product defects, Product/PMO for the unavailable requested feature/roadmap or formal change request, and Logistics for delayed replacement hardware; involve CS leadership/account team when renewal risk is material.",VAL-CS-004_Renewal_Risk_Signals_Brief.docx | VAL-CS-003_Escalation_Handoff_Note.docx | TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx,0.0,incorrect,"Incorrect/seriously incomplete: identifies only Customer Success & Support and says exact next steps cannot be determined, missing the recovery plan/executive review and Engineering, Product/PMO, and Logistics routing."
+hybrid_rerank,hr1,What is the first-response SLA for a Sev-1 support incident?,"The target first-response SLA for a Sev-1 support incident is 15 minutes. 
+
+[Source: TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx]
+Customer Success and Support Handbook
+Service targets and escalation guide
+Sev-1 first response, **Target** = 15 min.
+
+Additionally, the document TEAMQA-ENG-001_OrchestrAI_Engineering_Platform_and_Edge_Systems_Handbook.docx also mentions that for a Sev-1 incident, the target response is within 10 minutes.
+SEV-1 incident, **Target response** = Within 10 min.
+
+However, it's worth noting that the document TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx specifically states the target first-response SLA for a Sev-1 support incident as 15 minutes.","For a customer support Sev-1 incident, the first-response target is 15 minutes; the clock starts when the case is correctly classified. VAL-CS-001 also classifies Sev-1 as a critical production outage at one or more active sites with a 15-minute response target.",TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx | VAL-CS-001_Severity_Matrix.docx,1.0,correct,Correctly gives the 15-minute support first-response SLA. The Engineering 10-minute response detail is extraneous but explicitly distinguished from the support SLA.
+hybrid_rerank,hr2,What steps must be completed before a new employee is considered ready for day one at OrchestrAI?,"According to the Day-One Onboarding Checklist (VAL-HR-001), the following steps must be completed before a new employee is considered ready for day one:
+
+1. The new hire must be able to sign in with baseline credentials and MFA.
+2. Payroll and tax forms must be complete or formally escalated.
+3. The manager must confirm first-week priorities and required meetings.
+4. Any missing prerequisite that affects security, payroll, or access must be escalated the same day.
+
+[Source: VAL-HR-001_Day_One_Onboarding_Checklist.docx]","The day-one readiness checklist requires the pre-start validation tasks to be complete: employee record created in PeopleCore; laptop and baseline tools requested; badge/facility access request initiated for office-based staff; role-based access submitted through AccessHub; orientation invite sent; and manager ramp plan confirmed. The day-one completion rules also require baseline credentials and MFA, payroll/tax forms complete or formally escalated, manager confirmation of first-week priorities/meetings, and same-day escalation of any security, payroll, or access prerequisite.",VAL-HR-001_Day_One_Onboarding_Checklist.docx,0.5,partially_correct,"Partially correct: includes the day-one completion rules, but misses the required pre-start validation tasks including employee record, laptop/tools request, access request, orientation invite, and manager ramp plan."
+hybrid_rerank,hr3,"A new engineer starts on Monday, but their laptop has not arrived and their required access is still pending. Which teams are involved and what should happen next?","The retrieved context is insufficient to provide a complete answer to your question. However, based on the provided information:
+
+* The hiring manager started the request through the onboarding workflow.
+* IT does not build a device against 1 business day.
+* If there's a shipment delay or damaged delivery, Regional IT/Logistics is the Primary Owner and escalation should be triggered when delivery risk affects start date.
+
+To determine the next steps, it would be necessary to have more information about the current status of the laptop request and the specific issues with the new engineer's access.","For a start-date laptop/access risk, the involved owners include the hiring manager/HRIS, IT asset coordinator/Endpoint Engineering/IT Service Desk Lead, Site IT/ship desk, Regional IT/Logistics, the manager through AccessHub, and Security if privileged access is involved. Next, if the start date is within 72 hours and no device is assigned, the IT Service Desk Lead must notify the hiring manager and regional IT manager; shipment or damaged-delivery risk must be escalated by Regional IT/Logistics when it affects the start date. Pending access should be handled through AccessHub, and any missing prerequisite affecting security, payroll, or access must be escalated the same day.",VAL-IT-001_Laptop_Provisioning_FAQ.docx | VAL-HR-001_Day_One_Onboarding_Checklist.docx,0.5,partially_correct,"Partially correct: includes Regional IT/Logistics escalation for delivery risk, but is incomplete, says more information is needed, omits pending access handling, and contains an incoherent unsupported phrase about IT not building a device against 1 business day."
+hybrid_rerank,hr4,Can OrchestrAI make an urgent hardware purchase without following the normal PO workflow if a warehouse outage is at risk?,"Based on the provided context, there is no direct policy or instruction regarding urgent hardware purchases in case of a warehouse outage. However, it does mention that emergency policy updates may be issued outside the normal cadence when risk warrants (TEAMQA-IT-001_OrchestrAI_IT_Workplace_and_Service_Desk_Handbook.docx). 
+
+The context also mentions that the IT team's goal is dependable and secure technology support (TEAMQA-IT-001_OrchestrAI_IT_Workplace_and_Service_Desk_Handbook.docx), but it does not provide specific guidance on handling urgent hardware purchases in case of a warehouse outage.
+
+Therefore, without explicit instruction or policy, it cannot be determined if OrchestrAI can make an urgent hardware purchase without following the normal PO workflow in this scenario. The retrieved context is insufficient to answer this question accurately.","Yes. Emergency purchases may proceed when waiting for the full standard workflow would create material operational, security, or customer impact, including a customer outage or warehouse-operational failure, if the standard approval path cannot complete in time and a named executive or delegated approver accepts accountability. The exception still requires business justification and impact statement, approval record, follow-up PO/reconciliation, and post-event review within 5 business days.",VAL-FIN-005_Emergency_Procurement_Exception_Memo.docx,0.0,incorrect,Incorrect: says there is no direct policy and misses the emergency procurement exception that allows urgent purchases when delay would cause warehouse-operational failure or customer impact.
+hybrid_rerank,hr5,"A customer renewal is at risk because support cases are recurring, a requested feature is still unavailable, and replacement hardware is delayed. What should OrchestrAI do next, and which teams must be involved?","Based on the provided context, the following steps should be taken:
+
+1. The Customer Success team should identify the account as at risk due to recurring support cases, a requested feature still being unavailable, and replacement hardware delays.
+2. According to the Renewal Risk Signals Brief (VAL-CS-004), these signals indicate that the account may be at risk before a renewal or expansion cycle.
+
+To address the issue, the following teams should be involved:
+
+1. Support: As per TEAMQA-CS-001, Support involves Logistics when resolution depends on replacement hardware, which is the case here.
+2. Engineering: Although not explicitly mentioned in this context, it's likely that Engineering would need to be involved to resolve the product defect or undocumented behavior change after release.
+
+Feature requests are documented in AtlasCRM with account context, business impact, and urgency (TEAMQA-CS-001), but there is no specific guidance on how to handle a customer renewal at risk due to feature unavailability.
+
+Recurring vendors should have renewal notice dates, contract owners, and budget checkpoints recorded so the business can decide whether to renew, renegotiate, or exit before an automatic extension occurs (TEAMQA-FIN-001). However, this context is related to finance and procurement, not directly applicable to customer success.
+
+The retrieved context does not explicitly contain a direct policy rule, exception, SLA, or escalation instruction for handling a customer renewal at risk due to multiple factors.","OrchestrAI should treat this as material renewal risk and open a recovery plan/executive review with a problem statement, customer-visible impact, named owners, milestone dates, dependencies, and exact executive update cadence, reviewed weekly until the account returns to yellow or green status. Customer Success/CS manager/CSM owns renewal readiness and recovery planning, while Support owns case handling. Route blockers to the function that can remove them: Engineering for recurring incident patterns or product defects, Product/PMO for the unavailable requested feature/roadmap or formal change request, and Logistics for delayed replacement hardware; involve CS leadership/account team when renewal risk is material.",VAL-CS-004_Renewal_Risk_Signals_Brief.docx | VAL-CS-003_Escalation_Handoff_Note.docx | TEAMQA-CS-001_OrchestrAI_Customer_Success_and_Support_Handbook.docx,0.5,partially_correct,"Partially correct: identifies Customer Success risk handling and some Support/Engineering points, but misses Product/PMO and Logistics as required blocker owners, denies that direct guidance exists, and includes irrelevant vendor-renewal information from Finance."
