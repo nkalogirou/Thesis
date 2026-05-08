@@ -29,32 +29,44 @@ This repository contains multiple Retrieval-Augmented Generation implementations
 │
 ├── data/
 │   ├── dummy_data/                     OrchestrAI synthetic enterprise corpus
-│   │   ├── Customer Support/           5 DOCX files
-│   │   ├── Engineering/                5 DOCX files
-│   │   ├── Finance/                    5 DOCX files
-│   │   ├── HR/                         5 DOCX files
-│   │   ├── IT/                         5 DOCX files
-│   │   ├── Logistics/                  5 DOCX files
-│   │   ├── Product/                    5 DOCX files
-│   │   ├── Q&A Hanbooks/              10 DOCX files (one per department)
-│   │   ├── Sales/                      5 DOCX files
-│   │   └── Security/                   5 DOCX files
-│   │
 │   ├── ground_truth/
 │   │   └── rag_ground_truth.csv        Manual scores and reference answers
-│   │
 │   └── results/
 │       ├── experimental/               Generated outputs, ignored by Git
 │       ├── final/                      Curated results for submission
-│       │   ├── rag_results.csv                 Raw experiment results
-│       │   ├── deterministic_eval_results.csv  Per-scenario evaluation scores
-│       │   └── deterministic_eval_summary.csv  Summary table per pipeline
 │       └── figures/                    Exported charts
-│           ├── answer_quality.png
-│           ├── retrieval_quality.png
-│           ├── scenario_heatmap.png
-│           ├── timing_breakdown.png
-│           └── radar_chart.png
+│
+├── Thesis/                             LaTeX thesis source and compiled PDF
+│   ├── _main.tex                       Main LaTeX entry point
+│   ├── _main.pdf                       Compiled thesis PDF
+│   ├── ADG.sty                         Thesis style/package configuration
+│   ├── references.bib                  Bibliography entries
+│   ├── 0_covers.tex                    Cover pages
+│   ├── 0_prebody.tex                   Declaration, acknowledgements, abstract, abbreviations, TOC
+│   ├── 01_introduction.tex             Chapter 1: Introduction
+│   ├── 02_background.tex               Chapter 2: Background
+│   ├── 03_literature_review.tex        Chapter 3: Literature review
+│   ├── 04_methodology.tex              Chapter 4: Methodology
+│   ├── 05_experiments.tex              Chapter 5: Experiments
+│   ├── 06_results_discussion.tex       Chapter 6: Results and discussion
+│   ├── 07_conclusion_future_work.tex   Chapter 7: Conclusion and future work
+│   ├── appendices.tex                  Appendix material
+│   ├── manuals.tex                     Installation and user manuals
+│   └── images/                         Thesis figures and diagrams
+│       ├── euc.jpg
+│       ├── Multi-head_attention.png
+│       ├── Transformer,_full_architecture.png
+│       ├── rag-architecture.png
+│       ├── fig01_overall_thesis_workflow.png
+│       ├── fig02_simplified_transformer.png
+│       ├── fig03_high_level_rag_pipeline.png
+│       ├── fig04_plain_llm_vs_rag.png
+│       ├── fig08_six_pipeline_variants.png
+│       ├── fig09_answer_quality.png
+│       ├── fig10_retrieval_quality.png
+│       ├── fig11_timing_breakdown.png
+│       ├── fig12_scenario_heatmap.png
+│       └── fig13_radar_chart.png
 │
 ├── volumes/                            Milvus runtime data, ignored by Git
 ├── requirements.txt                    Python dependencies
