@@ -6,7 +6,7 @@ This repository contains multiple Retrieval-Augmented Generation implementations
 
 ```text
 .
-├── notebooks/
+├── notebooks/                          Local experiments (Ollama + Milvus)
 │   ├── rag_basic.ipynb                 Baseline RAG with in-memory retrieval
 │   ├── rag_vectordb.ipynb              Dense retrieval using Milvus
 │   ├── rag_vectordb_tuned.ipynb        VectorDB with tuned chunking parameters
@@ -15,13 +15,34 @@ This repository contains multiple Retrieval-Augmented Generation implementations
 │   ├── rag_hybrid_&_rerank.ipynb       Hybrid retrieval + reranking
 │   └── rag_visualizations.ipynb        Charts and figures for the thesis
 │
+├── notebooks-hpc/                      HPC experiments (vLLM + Milvus)
+│   ├── rag_basic.ipynb                 Same pipelines as local, HPC backends
+│   ├── rag_vectordb.ipynb
+│   ├── rag_vectordb_tuned.ipynb
+│   ├── rag_reranker.ipynb
+│   ├── rag_hybrid.ipynb
+│   ├── rag_hybrid_&_rerank.ipynb
+│   ├── rag_visualizations.ipynb
+│   ├── results_logger.py               Notebook-local helpers (mirrors src/)
+│   ├── ground_truth_builder.py
+│   └── deterministic_eval.py
+│
+├── rag-training2025-main/
+│   └── vllm/                           Slurm launchers for LLM, embedder, reranker
+│       ├── serve_models.sh             Submit all vLLM services
+│       ├── llm_launcher.sh
+│       ├── embedder_launcher.sh
+│       └── ranker_launcher.sh
+│
 ├── src/
 │   ├── results_logger.py               Shared CSV logging for all notebooks
 │   ├── ground_truth_builder.py         Generates ground-truth template from results
 │   └── deterministic_eval.py           Automated evaluation (ROUGE, BERTScore, etc.)
 │
 ├── scripts/
-│   └── standalone_embed.sh             Milvus start/stop/restart script
+│   ├── standalone_embed.sh             Milvus start/stop/restart script
+│   ├── launch_jupyter.sh               Slurm Jupyter job + tunnel instructions
+│   └── compare_timing_local_hpc.py     Local vs HPC timing plots and summaries
 │
 ├── config/
 │   ├── embedEtcd.yaml                  Milvus etcd configuration
@@ -32,17 +53,18 @@ This repository contains multiple Retrieval-Augmented Generation implementations
 │   ├── ground_truth/
 │   │   └── rag_ground_truth.csv        Manual scores and reference answers
 │   └── results/
-│       ├── experimental/               Generated outputs, ignored by Git
+│       ├── experimental/               Generated CSVs during runs (gitignored)
 │       ├── final/                      Curated results for submission
-│       └── figures/                    Exported charts
+│       ├── local_vs_hpc/               Timing comparison charts and summaries
+│       └── figures/                    Exported charts from visualization notebooks
 │
-├── Thesis/                             LaTeX thesis source and compiled PDF
+├── Documentation/                      LaTeX thesis source and compiled PDF
 │   ├── _main.tex                       Main LaTeX entry point
 │   ├── _main.pdf                       Compiled thesis PDF
 │   ├── ADG.sty                         Thesis style/package configuration
 │   ├── references.bib                  Bibliography entries
 │   ├── 0_covers.tex                    Cover pages
-│   ├── 0_prebody.tex                   Declaration, acknowledgements, abstract, abbreviations, TOC
+│   ├── 0_prebody.tex                   Declaration, acknowledgements, abstract, TOC
 │   ├── 01_introduction.tex             Chapter 1: Introduction
 │   ├── 02_background.tex               Chapter 2: Background
 │   ├── 03_literature_review.tex        Chapter 3: Literature review
@@ -53,22 +75,10 @@ This repository contains multiple Retrieval-Augmented Generation implementations
 │   ├── appendices.tex                  Appendix material
 │   ├── manuals.tex                     Installation and user manuals
 │   └── images/                         Thesis figures and diagrams
-│       ├── euc.jpg
-│       ├── Multi-head_attention.png
-│       ├── Transformer,_full_architecture.png
-│       ├── rag-architecture.png
-│       ├── fig01_overall_thesis_workflow.png
-│       ├── fig02_simplified_transformer.png
-│       ├── fig03_high_level_rag_pipeline.png
-│       ├── fig04_plain_llm_vs_rag.png
-│       ├── fig08_six_pipeline_variants.png
-│       ├── fig09_answer_quality.png
-│       ├── fig10_retrieval_quality.png
-│       ├── fig11_timing_breakdown.png
-│       ├── fig12_scenario_heatmap.png
-│       └── fig13_radar_chart.png
 │
 ├── volumes/                            Milvus runtime data, ignored by Git
+├── READHPC.md                          HPC login, secrets, vLLM, Jupyter, notebooks
+├── .env.example                        Template for gitignored ~/Thesis/.env (HPC only)
 ├── requirements.txt                    Python dependencies
 ├── .gitignore
 └── README.md
@@ -85,11 +95,27 @@ python -m pip install -r requirements.txt
 
 ## Local vs HPC
 
-- Local workflow uses notebooks in `notebooks/` and writes to `data/results/experimental/rag_results.csv`.
-- HPC workflow uses notebooks in `notebooks-hpc/` and writes to `data/results/experimental/rag_results_hpc.csv`.
-- HPC startup details (vLLM jobs + Jupyter tunnel) are documented in `READHPC.md`.
+| | Local | HPC (Cyclone) |
+|---|--------|----------------|
+| Notebooks | `notebooks/` | `notebooks-hpc/` |
+| LLM / embeddings | Ollama | vLLM via `rag-training2025-main/vllm/` |
+| Results CSV | `data/results/experimental/rag_results.csv` | `data/results/experimental/hpc_results.csv` |
+| Guide | This file (sections below) | [`READHPC.md`](READHPC.md) |
 
-## Start Ollama
+### Secrets (HPC only)
+
+Never commit API keys or tokens. On the cluster:
+
+```bash
+cd ~/Thesis
+cp .env.example .env
+chmod 600 .env
+# set HF_TOKEN=hf_... in .env
+```
+
+`llm_launcher.sh` reads `~/Thesis/.env` when you `sbatch` jobs. Jupyter tunnel details are written to `scripts/connection_info.txt` (also gitignored).
+
+## Start Ollama (local)
 
 ```bash
 ollama serve
@@ -120,35 +146,46 @@ Restart Milvus:
 bash scripts/standalone_embed.sh restart
 ```
 
-## Start Jupyter
+## Start Jupyter (local)
 
 ```bash
 jupyter notebook
 ```
 
-Then open the notebooks from the `notebooks/` folder.
+Open notebooks from `notebooks/`.
 
 ## Running Experiments
 
-Run the notebooks in this order:
+Run the notebooks in this order (local or HPC):
 
-1. `notebooks/rag_basic.ipynb`
-2. `notebooks/rag_vectordb.ipynb`
-3. `notebooks/rag_vectordb_tuned.ipynb` (tuned chunking variant)
-4. `notebooks/rag_reranker.ipynb`
-5. `notebooks/rag_hybrid.ipynb`
-6. `notebooks/rag_hybrid_&_rerank.ipynb`
+1. `rag_basic.ipynb`
+2. `rag_vectordb.ipynb`
+3. `rag_vectordb_tuned.ipynb`
+4. `rag_reranker.ipynb`
+5. `rag_hybrid.ipynb`
+6. `rag_hybrid_&_rerank.ipynb`
 
-Generated experiment results are saved to:
+**Local** — use `notebooks/`; results go to:
 
 ```text
 data/results/experimental/rag_results.csv
 ```
 
-For HPC runs, execute the mirrored notebooks under `notebooks-hpc/` in the same order and use:
+**HPC** — start vLLM and Jupyter per [`READHPC.md`](READHPC.md), then use `notebooks-hpc/`; results go to:
 
 ```text
-data/results/experimental/rag_results_hpc.csv
+data/results/experimental/hpc_results.csv
+```
+
+### Local vs HPC timing comparison
+
+After you have a curated local CSV and HPC results:
+
+```bash
+python scripts/compare_timing_local_hpc.py \
+  --local-csv data/results/final/rag_results.csv \
+  --hpc-csv data/results/experimental/hpc_results.csv \
+  --output-dir data/results/local_vs_hpc
 ```
 
 ## Evaluation
@@ -216,10 +253,14 @@ The summary CSV contains the following columns, averaged per implementation:
 
 Generate charts from the final results:
 
-Open `notebooks/rag_visualizations.ipynb` and run all cells. Figures are saved to `data/results/figures/`.
+- Local: `notebooks/rag_visualizations.ipynb`
+- HPC: `notebooks-hpc/rag_visualizations.ipynb`
+
+Figures are saved under `data/results/figures/` (and timing comparison figures under `data/results/local_vs_hpc/`).
 
 ## Notes
 
 - The `volumes/` folder contains local Milvus data and is ignored by Git.
-- The `data/results/experimental/` folder contains generated experiment outputs and is ignored by Git.
+- The `data/results/experimental/*.csv` files are generated during runs and are ignored by Git.
 - Only clean, final result files should be committed under `data/results/final/`.
+- Do not commit `.env`, `scripts/connection_info.txt`, or tokens in shell scripts.
