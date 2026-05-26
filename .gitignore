@@ -54,3 +54,6 @@ dist/
 
 #review comments
 reviews/
+
+#cyclone README
+hpc-logs/README_training.md
