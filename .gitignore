@@ -51,3 +51,6 @@ dist/
 *.zip
 *.tar
 *.tar.gz
+
+#review comments
+reviews/
