@@ -1,11 +1,20 @@
+% =====================================================
+% Encoding & language
+% =====================================================
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[T1]{fontenc}
 \RequirePackage[english]{babel}
 \RequirePackage{bookmark}
 
-
+% =====================================================
+% Font (Times New Roman equivalent for pdfLaTeX)
+% =====================================================
 \RequirePackage{newtxtext,newtxmath}
 
+% =====================================================
+% Margins
+% Technical guide: top/bottom 1in, left 2in, right 1.25in.
+% =====================================================
 \RequirePackage[
   left=2in,
   right=1.25in,
@@ -13,13 +22,20 @@
   bottom=1in
 ]{geometry}
 
+% =====================================================
+% Line spacing + paragraph spacing
+% =====================================================
 \RequirePackage{setspace}
 \onehalfspacing
 \setlength{\parskip}{6pt}
 \setlength{\parindent}{0pt}
 
+% Reduce occasional overfull lines caused by long technical terms/URLs.
 \setlength{\emergencystretch}{3em}
 
+% =====================================================
+% Chapter title formatting (22pt, centered, bold)
+% =====================================================
 \RequirePackage{titlesec}
 
 \titleformat{\chapter}
@@ -36,6 +52,11 @@
 
 \titlespacing*{\chapter}{0pt}{0pt}{20pt}
 
+% =====================================================
+% Headers + page numbers
+% Italic chapter header on normal pages; no header on chapter-opening pages.
+% Page numbers bottom-right for all numbered pages.
+% =====================================================
 \RequirePackage{fancyhdr}
 \setlength{\headheight}{14.5pt}
 
@@ -51,6 +72,8 @@
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0pt}
 
+% Chapter-opening pages use LaTeX's plain style. Redefine it so numbering
+% still appears in the bottom-right, while the header is suppressed.
 \fancypagestyle{plain}{%
   \fancyhf{}%
   \fancyfoot[R]{\thepage}%
@@ -58,6 +81,7 @@
   \renewcommand{\footrulewidth}{0pt}%
 }
 
+% Front-matter pages generated after the table of contents.
 \fancypagestyle{frontmatter}{%
   \fancyhf{}%
   \fancyhead[R]{\itshape\nouppercase{\leftmark}}%
@@ -66,11 +90,17 @@
   \renewcommand{\footrulewidth}{0pt}%
 }
 
+% =====================================================
+% Figures/Tables captions (~10pt style)
+% =====================================================
 \RequirePackage{caption}
 \captionsetup{font=footnotesize,labelfont=bf}
 \captionsetup[figure]{position=bottom}
 \captionsetup[table]{position=top}
 
+% =====================================================
+% Maths, figures, tables
+% =====================================================
 \RequirePackage{amsmath}
 \RequirePackage{graphicx}
 \graphicspath{{images/}{figures/}}
@@ -80,12 +110,17 @@
 \RequirePackage{longtable}
 \RequirePackage{tabularx}
 
+% Chapter-based numbering for figures/tables
 \numberwithin{figure}{chapter}
 \numberwithin{table}{chapter}
 
+% TikZ (optional, safe to include)
 \RequirePackage{tikz}
 \usetikzlibrary{positioning,arrows.meta,fit,shapes.misc,shapes.geometric}
 
+% =====================================================
+% Links & references
+% =====================================================
 \RequirePackage{hyperref}
 \hypersetup{
   colorlinks = true,
@@ -96,6 +131,9 @@
 \RequirePackage{url}
 \RequirePackage{cite}
 
+% =====================================================
+% Acronyms + listings
+% =====================================================
 \RequirePackage[printonlyused]{acronym}
 \RequirePackage{listings}
 \lstset{

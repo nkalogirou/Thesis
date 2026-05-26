@@ -1,0 +1,159 @@
+\chapter{Literature Review}
+
+\section{Introduction}
+
+The objective of this literature review is to document and evaluate current knowledge on the use of \acp{LLM}, methods for optimizing the efficiency and scalability of inference processes, as well as \ac{RAG}-based architectures used with various types of computational environments. With \acp{LLM} continuing to grow in terms of size and complexity, they are resulting in growing computational requirements that necessitate improved methods for deploying and optimizing them locally or distributively (including \ac{HPC}) in order to support increased levels of utilization. At the same time, prior work has demonstrated potential benefits associated with using RAG systems to improve the factual accuracy of responses from \acp{LLM}, reduce instances of hallucination, etc. This thesis uses that literature as the basis for comparing retrieval-level \ac{RAG} variants and their execution workflow across local and \ac{HPC} environments.
+
+This Chapter brings together prior literature in three broad categories: (i) deployment approaches for \acp{LLM} on Local, Cloud, and \ac{HPC} platforms; (ii) optimization approaches to improve scalability, memory usage reduction and throughput improvement of inference; and (iii) retrieval augmentation systems which include retrieval methods, indexing techniques, context optimizations. In addition, the Chapter provides a review of benchmarking standards and evaluation methodologies to assess computational and retrieval performance of \acp{LLM} and \ac{RAG} pipelines.
+
+Through compilation of findings from these categories, this chapter positions the thesis within prior work on \ac{LLM} deployment, inference optimization, and \ac{RAG} evaluation. The emphasis is to define the specific scope of this thesis: a controlled comparison of implemented retrieval-level \ac{RAG} pipelines using a reproducible local and \ac{HPC} workflow.
+
+\section{LLM Deployment Approaches}
+
+\subsection{Local and Cloud-Based Deployments}
+
+Research into the deployment of \ac{LLM}s often compares cloud-based infrastructure, local systems, and managed compute environments. The main differences between these types of deployments are related to their available resources (such as CPU/GPU), how scalable they can be (scalability), the total cost of ownership, and the performance characteristics of each environment.
+
+\textbf{Deployments using cloud-based infrastructure} utilize the elastic computing resources provided by major cloud vendors such as \acf{AWS}, Microsoft Azure, and Google Cloud. These services support the use of distributed inference engines, highly scalable \acp{GPU}, and also support the ability to manage model serving applications at scale, thus allowing for reliable execution of very large \ac{LLM} workloads. Additionally studies have shown that through automated scaling, and distributed storage a high degree of efficiency is possible when executing multi-billion parameter models \cite{narayanan2021cloudscale}. Some negative aspects associated with deploying models in the cloud include: the high operating expense (e.g. hourly charges for running the service), Data Transfer Fees (for transferring data across networks), Vendor Lock-In (inability to switch from one cloud provider to another) and Latency (the time it takes for data to travel over the network).
+
+\textbf{Deployments using local infrastructure} require a user to deploy their models to a workstation class \ac{GPU} or on premises server. Local deployments offer several advantages including: predictable performance, low latency per user, and strong data governance. A significant disadvantage of local deployments is the inability to scale up and down to accommodate multiple users or meet the growing demand for increasingly larger \ac{LLM} models.
+
+Given the current trade-offs between control (local deployments) and scalability (cloud deployments), \ac{HPC}-based deployments are relevant because they provide managed compute resources, scheduling, shared storage, and reproducible execution workflows that differ from both personal workstations and persistent cloud services.
+
+\subsection{HPC-Based Deployments}
+
+\acf{HPC} systems offer a potential solution for scaling \ac{LLM} workload due to their highly connected clusters, high-bandwidth interconnects, and massive amounts of total memory. In contrast to cloud based environments optimized for loosely connected service-based applications, \ac{HPC} clusters allow for rapid communication between each node, enabling both efficient distributed training and inference \cite{dongarra2020hpcsurvey}.
+
+
+A great deal of prior work focuses on distributed training frameworks (Megatron-LM \cite{shoeybi2019megatron}, DeepSpeed's ZeRO \cite{rajbhandari2020deepspeed}) that utilize tensor, pipeline, and data parallelism to enable the training of extremely large models; these approaches also inform inference based on distributed models with memory limitations per device.
+
+In addition to the above references, other researchers have examined aspects of deep learning in \ac{HPC} environments including high-speed interconnects such as InfiniBand and NVLink, the effects of parallel file system \ac{I/O} performance on \ac{LLM}, and the impact of scheduler overhead on performance. These studies show that hardware, storage, and scheduling decisions can affect machine-learning workloads. For this thesis, those same categories are used to interpret \emph{retrieval}-based workloads, where retrieval latency and storage throughput affect overall \ac{RAG} performance.
+
+Prior research has shown how various types of system level decisions can be used to optimize different ML workloads using containerization (Apptainer), and scheduling (Slurm). This thesis applies the same type of systems-aware reasoning to the implemented \ac{LLM} inference and \ac{RAG} deployment workflow.
+
+While \ac{HPC} platforms can support larger and more controlled workloads than a laptop, the relevant point for this thesis is the practical comparison between local execution and managed \ac{HPC} execution of the same \ac{RAG} workflow.
+
+\subsection{Model Serving Frameworks}
+
+A number of high-throughput model-serving frameworks have been developed to scale \acp{LLM}:
+
+The \textbf{\ac{vLLM}} framework was the first to use a \textit{PagedAttention} mechanism to improve \ac{KV}-cache efficiency and increase throughput during heavy concurrency as compared to previous mechanisms \cite{kwon2023vllm}. The current version of this framework is likely one of the top performing open source inference engines.
+
+The \textbf{NVIDIA Triton Inference Server} is an inference server framework capable of running multiple frameworks concurrently using dynamic batch sizing and GPU-aware task scheduling. However, it was not initially designed with \acp{LLM} in mind, therefore, it has limited ability to optimize \ac{LLM}-specific parameters.
+
+The \textbf{\acf{TGI}} framework was created for the purpose of optimizing performance when deploying transformer-based text generation models. \ac{TGI} supports tensor-parallelized inference, quantization, and continuous batch processing.
+
+\textbf{RayServe} is a distributed orchestration tool for scaling applications across cluster resources. While RayServe does provide a flexible way to deploy applications across multiple machines, its primary function is focused on the distribution of tasks across nodes rather than providing optimizations for inference speed. 
+
+Therefore, while several serving frameworks can be used to distribute application logic, this thesis focuses on the practical role of \ac{vLLM}-based serving in the implemented \ac{HPC} workflow and on how deployment overheads are separated from retrieval and generation timing.
+
+\section{Optimization Techniques for LLM Inference}
+
+\subsection{Quantization and Pruning}
+
+Quantization allows both a reduction in Memory (memory usage) and Computation (computational complexity), by converting the weights and activations from High-Precision (\ac{FP32} / \ac{FP16}) to Lower Precision Formats like \ac{INT8} or \ac{INT4}. Methods including LLM.int8 \cite{dettmers2022int8}, \ac{GPTQ}, and \ac{AWQ} allow for significant reductions in resource utilization with minimal losses in accuracy. This enables larger batch sizes, faster inference etc.
+
+Pruning is a method to remove redundant weights from an existing model to reduce the size of the model and computational complexity. Although early research focused primarily on vision models, recent work has applied pruning to Transformer models, and has demonstrated that structured sparsity can be used to reduce compute requirements without large losses in accuracy \cite{frankle2019lottery}.
+
+There are both advantages and disadvantages for using quantization and pruning in \ac{HPC} environments. These techniques can reduce memory use and support larger batch sizes, but they may also introduce accuracy or compatibility trade-offs. In this thesis, they are treated as background techniques rather than implemented experimental variables.
+
+\subsection{Knowledge Distillation}
+
+Distillation has been shown to allow a larger "teacher" LLM to be reduced into a smaller "student". For example, models like DistilBERT \cite{sanh2019distilbert} have demonstrated that many capabilities of an LLM may be preserved in a model that is significantly cheaper than the original model. 
+
+However, the knowledge distillation method will still result in lower latency and memory usage than the teacher model but it does not provide better results on knowledge-intensive tasks. The method also does not inherently prevent hallucination and does not include the ability to ground retrievals in either the data used or the context in which the model was trained. In this thesis, knowledge distillation is not used as an experimental variable because the implemented comparison focuses on retrieval and deployment behavior rather than changing model size through teacher-student training.
+
+\subsection{Parallelization and Sharding}
+
+Strategies to enable \texttt{Data Parallelism}, \texttt{Tensor Parallelism} and \texttt{Pipeline Parallelism}, represent the most important ways to scale LLMs. Tensor-Parallelism and Pipeline-Parallelism as used in Megatron-LM \cite{shoeybi2019megatron} are key to enabling distributed execution. The use of parameter, gradient and optimizer state shards in DeepSpeed ZeRO \cite{rajbhandari2020deepspeed} and PyTorch FSDP can be seen as an extension of the ideas behind those two forms of parallelization. 
+
+While there is a substantial body of work analyzing the impact of these methods on the training process, this thesis treats parallelization and sharding mainly as deployment background. The implemented comparison focuses on the measurable behavior of the \ac{RAG} workflow rather than on redesigning the language model execution engine.
+
+\subsection{Caching and Memory Optimization}
+
+The attention model by FlashAttention \cite{dao2022flashattention} reduces the memory consumption while keeping the accuracy to a high level, thus is very suitable for applications with low memory requirements.
+
+The PagedAttention mechanism used by \ac{vLLM} splits the \ac{KV-cache} into paged blocks, which improves performance in systems that serve multiple requests at once \cite{kwon2023vllm}.
+
+In addition to sparsification, eviction strategies and cache compressions, researchers are actively exploring other optimizations. However most of them are still in an experimental phase.
+
+Due to multi-user workloads and job schedulers, \ac{HPC} environments have varying amounts of available memory. For this thesis, caching and memory optimization are relevant because they influence model-serving behavior and repeated execution costs, even though they are not the main experimental variables.
+
+\section{RAG Systems and Optimization Strategies}
+
+\subsection{Existing Frameworks}
+
+The major frameworks for building RAG pipelines (LangChain \cite{langchain2023}, LlamaIndex \cite{llamaindex2023} and Haystack) offer modules to build the pipeline. Their common role is to organize document loading, embedding, retrieval, prompt construction, and answer generation. This thesis uses this framework-oriented view to structure the implemented pipelines and keep retrieval choices comparable.
+
+\subsection{Retrieval Efficiency and Hybrid Approaches}
+
+Hybrid retrieval techniques combine sparse and dense retrieval strategies to improve recall and robustness \cite{robertson2009bm25,karpukhin2020dpr}. In this thesis, retrieval performance is interpreted together with deployment factors such as: 
+
+\begin{itemize}
+    \item Parallel File Systems,
+    \item Multi Node Clusters,
+    \item High Performance Computing Interconnects, 
+    \item Retrieval performance using Slurm.
+\end{itemize}
+
+\subsection{RAG on HPC Environments}
+
+RAG systems are often discussed in cloud computing or enterprise deployment settings, where services may exist persistently, dynamic autoscaling may be available, and container orchestration may be part of the infrastructure.
+
+In contrast, \ac{HPC} systems utilize batch scheduling (e.g., Slurm) and employ parallel storage systems (e.g. Lustre, GPFS). The jobs executed on these systems do not remain active after their completion. These differences create additional complexities regarding how to serve, retrieve, and perform distributed inference \cite{slurm2003,kurtzer2017singularity,dongarra2020hpcsurvey}.
+
+\section{Benchmarking and Evaluation Studies}
+
+Benchmarks such as \ac{MMLU}, \ac{HELM} \cite{liang2022helm}, and OpenLLM Leaderboard assess \ac{LLM} quality, while \ac{MLPerf} \cite{reddi2020mlperf} measures inference speed. These benchmarks are useful reference points, but the evaluation in this thesis requires additional workflow-level measurements such as:
+
+
+\begin{itemize}
+    \item autoregressive decoding,
+    \item retrieval latency,
+    \item distributed inference.
+\end{itemize}
+
+RAG-specific benchmarks like \ac{KILT} assess retrieval accuracy. The thesis evaluation complements this kind of benchmark perspective by also recording operational factors such as:
+
+\begin{itemize}
+    \item scheduler effects,
+    \item inter-node communication,
+    \item parallel file system performance,
+    \item container overhead.
+\end{itemize}
+
+\section{Positioning of This Thesis}
+
+The reviewed literature motivates several design choices in this thesis:
+
+\begin{itemize}
+    \item \ac{LLM} deployment studies highlight the importance of hardware, serving frameworks, and resource management.
+    \item \ac{RAG} studies highlight the importance of retrieval quality, grounding, and answer quality.
+    \item \ac{HPC} deployment practices highlight the importance of scheduling, shared storage, containers, and reproducibility.
+    \item This thesis combines these perspectives in a controlled comparison of six retrieval-level \ac{RAG} variants across a local and \ac{HPC} workflow.
+\end{itemize}
+
+The contribution is therefore practical and bounded: the thesis does not claim to replace broad benchmark suites or exhaust the literature, but it applies established concepts to a reproducible implementation and evaluates how retrieval choices affect timing, retrieval quality, and answer quality.
+
+\begin{table}[htbp]
+\caption{Summary of related work areas and their relevance to this thesis.}
+\label{tab:literature-positioning}
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.23\textwidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Area} & \textbf{Main contribution from literature} & \textbf{Limitation for this thesis scope} & \textbf{Use in this thesis} \\
+\midrule
+\ac{LLM} deployment & Explains trade-offs between local, cloud, and managed compute environments. & Does not by itself evaluate retrieval behavior or answer grounding. & Defines why local and \ac{HPC} execution should be compared separately. \\
+Inference optimization & Describes serving, quantization, pruning, caching, and parallel execution strategies. & Many techniques change model execution rather than retrieval design. & Used as background while keeping the experiment focused on retrieval-level variants. \\
+\ac{RAG} systems & Shows how retrieval can ground generated answers in external documents. & General \ac{RAG} descriptions do not determine which retrieval variant is best for this corpus. & Motivates the comparison of dense, vector-database, reranking, hybrid, and hybrid-reranking pipelines. \\
+Benchmarking and evaluation & Provides established quality and performance measurement categories. & General benchmarks do not directly match the project corpus, scenarios, and logging workflow. & Supports the selected timing, retrieval-quality, and answer-quality metrics. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Summary}
+
+This chapter reviewed the literature on \ac{LLM} deployment strategies, inference optimization techniques, \ac{RAG} system design, and evaluation methods for \acp{LLM} and \ac{RAG}. The reviewed work shows that deployment environment, model-serving approach, retrieval design, and evaluation metrics all influence the behavior of practical \ac{RAG} systems.
+
+Therefore, Chapter 4 uses these concepts to define the methodology for comparing the implemented \ac{RAG} pipelines, their deployment workflow, and the metrics used to evaluate timing, retrieval quality, and answer quality.
