@@ -1,3 +1,4 @@
+```markdown
 # RAG Thesis Project
 
 This repository contains multiple Retrieval-Augmented Generation implementations for comparing baseline retrieval, vector database retrieval, reranking, hybrid retrieval, and hybrid retrieval with reranking.
@@ -264,3 +265,6 @@ Figures are saved under `data/results/figures/` (and timing comparison figures u
 - The `data/results/experimental/*.csv` files are generated during runs and are ignored by Git.
 - Only clean, final result files should be committed under `data/results/final/`.
 - Do not commit `.env`, `scripts/connection_info.txt`, or tokens in shell scripts.
+
+```
+
