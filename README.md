@@ -83,6 +83,12 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
+## Local vs HPC
+
+- Local workflow uses notebooks in `notebooks/` and writes to `data/results/experimental/rag_results.csv`.
+- HPC workflow uses notebooks in `notebooks-hpc/` and writes to `data/results/experimental/rag_results_hpc.csv`.
+- HPC startup details (vLLM jobs + Jupyter tunnel) are documented in `READHPC.md`.
+
 ## Start Ollama
 
 ```bash
@@ -137,6 +143,12 @@ Generated experiment results are saved to:
 
 ```text
 data/results/experimental/rag_results.csv
+```
+
+For HPC runs, execute the mirrored notebooks under `notebooks-hpc/` in the same order and use:
+
+```text
+data/results/experimental/rag_results_hpc.csv
 ```
 
 ## Evaluation

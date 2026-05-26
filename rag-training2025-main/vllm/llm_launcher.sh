@@ -1,21 +1,32 @@
 #!/bin/bash -l
 
 #SBATCH --job-name=llm_serve
-#SBATCH --partition=gpu # Partition
+#SBATCH --partition=a100 # Partition
 #SBATCH --nodes=1 # Number of nodes
-#SBATCH --gres=gpu:2 #Number of GPUs
+#SBATCH --gres=gpu:1 #Number of GPUs
 #SBATCH --ntasks-per-node=1  # Number of tasks
-#SBATCH --cpus-per-task=20
+#SBATCH --cpus-per-task=10
 #SBATCH --output=logs/llm_launcher.%j.out # Stdout (%j=jobId)
 #SBATCH --error=logs/llm_launcher.%j.err # Stderr (%j=jobId)
 #SBATCH --time=4:00:00 # Walltime
 #SBATCH -A p308 # Accounting project
+#SBATCH --reservation p308 # Reservation
 
 # Make sure your have been granted access to the model
-export MODEL_NAME="meta-llama/Llama-3.1-8B-Instruct" # "google/gemma-3-27b-it" "meta-llama/Llama-3.1-8B-Instruct" "openai/gpt-oss-20b"
+# export MODEL_NAME="google/gemma-3-27b-it" #"meta-llama/Llama-3.1-8B-Instruct" #"google/gemma-3-27b-it" # "openai/gpt-oss-20b"
+export MODEL_NAME="meta-llama/Llama-3.1-8B-Instruct" #"google/gemma-3-27b-it" # "openai/gpt-oss-20b"
+# Set HF_TOKEN in the environment before sbatch, or in a gitignored .env at repo root
+if [ -z "${HF_TOKEN:-}" ] && [ -f "${HOME}/Thesis/.env" ]; then
+    set -a
+    # shellcheck source=/dev/null
+    source "${HOME}/Thesis/.env"
+    set +a
+fi
+: "${HF_TOKEN:?Set HF_TOKEN (Hugging Face token) before submitting this job}"
+export HF_TOKEN
 
 # Load any necessary modules
-source ${HOME}/vllm_launcher/.venv/bin/activate
+source ${HOME}/Thesis/rag-training2025-main/vllm/.venv/bin/activate
 
 # Define the file path you want to clean up
 OUTPUT_FILE=/nvme/scratch/${USER}/llm.env
@@ -78,7 +89,18 @@ srun vllm serve ${MODEL_NAME} \
     --disable-custom-all-reduce \
     --enforce-eager \
     --dtype float16 \
-    --max-model-len 2048 \
     --api-key ${API_KEY} \
     --host ${HOSTNAME} \
     --port ${PORT}
+
+
+# srun vllm serve ${MODEL_NAME} \
+#     --task generate \
+#     --tensor-parallel-size ${TENSOR_PARALLEL_SIZE} \
+#     --no-enable-chunked-prefill \
+#     --disable-custom-all-reduce \
+#     --enforce-eager \
+#     --dtype bfloat16 \
+#     --api-key ${API_KEY} \
+#     --host ${HOSTNAME} \
+#     --port ${PORT}

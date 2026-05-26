@@ -19,6 +19,7 @@ Thumbs.db
 # Environment / secrets
 .env
 .env.*
+scripts/connection_info.txt
 *.key
 *.pem
 

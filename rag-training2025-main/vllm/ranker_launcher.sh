@@ -1,7 +1,7 @@
 #!/bin/bash -l
 
 #SBATCH --job-name=ranker_serve
-#SBATCH --partition=gpu # Partition
+#SBATCH --partition=a100 # Partition
 #SBATCH --nodes=1 # Number of nodes
 #SBATCH --gres=gpu:1 #Number of GPUs
 #SBATCH --ntasks-per-node=1  # Number of tasks
@@ -10,12 +10,13 @@
 #SBATCH --error=logs/ranker_launcher.%j.err # Stderr (%j=jobId)
 #SBATCH --time=4:00:00 # Walltime
 #SBATCH -A p308 # Accounting project
+#SBATCH --reservation p308 # Reservation
 
 # Make sure your have been granted access to the model
 export MODEL_NAME="BAAI/bge-reranker-base" # "google/gemma-3-27b-it" "meta-llama/Llama-3.1-8B-Instruct" "openai/gpt-oss-20b"
 
 # Load any necessary modules
-source ${HOME}/vllm_launcher/.venv/bin/activate
+source ${HOME}/Thesis/rag-training2025-main/vllm/.venv/bin/activate
 
 # Define the file path you want to clean up
 OUTPUT_FILE=/nvme/scratch/${USER}/ranker.env
