@@ -2,27 +2,98 @@
 
 \section{Introduction}
 
+This chapter presents a summary of the major results that were obtained through this project. It will identify the contributions as well as provide information regarding the limitations associated with this thesis. Additionally, it will outline possible areas for further development related to this research area.
+
+In addition to investigating the behaviour of six different \ac{RAG}-pipeline-variants at the level of retrieval, this research study measured both local performance of these variants. Furthermore, it also compares the local performance of each of the six \ac{RAG}-pipelines using time-based metrics in a local environment and using time-based metrics in a \acf{HPC} environment.
 
 \section{Summary of Findings}
 
+Local experimentation demonstrated that the in-memory pipeline performed best by manual evaluation of answers; however, the vector-database pipeline produced the highest value of retrieval quality metric (F1). This shows that answer quality and retrieval quality are correlated, yet not equivalent. A pipeline may successfully retrieve relevant documents, and therefore produce a relevant document set, yet fail to provide a complete answer due to omission of necessary operational detail in its generative component.
+
+Timing results indicated the same trade-off exists between pipeline complexity and processing cost as was previously determined with regard to retrieval time. Both basic and vector-database pipelines exhibited very low retrieval latency. However, reranking and hybrid-reranking introduced additional relevance-score stages that caused the additional processing costs associated with these stages to increase the overall retrieval time. Hybrid retrieval alone did not outperform dense vector retrieval in the local experiment. Therefore, it is likely that hybrid with retrieval will require careful parameterization prior to it being able to be considered as providing improved retrieval quality.
+
+In comparing the local vs \ac{HPC} environments, all six pipelines produced lower total run times when running in the \ac{HPC} environment than in the local environment. The average total speedup was approximately 5.05x. The greatest improvement was seen in generation time, whereas retrieval-time improvement was inconsistent. Additionally, some Milvus-based variants demonstrated slower retrieval times in \ac{HPC}. This indicates that service interaction, vector database access and storage behaviour may have significant effects on shorter duration retrieval operations.
+
+Table~\ref{tab:conclusion-rq-summary} summarises how the findings answer the research questions and hypotheses.
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \setlength{\tabcolsep}{4pt}
+    \renewcommand{\arraystretch}{1.25}
+    \begin{tabular}{@{}
+        >{\raggedright\arraybackslash}p{0.11\textwidth}
+        >{\raggedright\arraybackslash}p{0.60\textwidth}
+        >{\raggedright\arraybackslash}p{0.20\textwidth}
+        @{}}
+        \toprule
+        \textbf{RQ} & \textbf{Main finding} & \textbf{Hypothesis outcome} \\
+        \midrule
+        RQ1 &
+        Retrieval design affected both retrieval quality and answer quality. The best retrieval F1 and best manual answer score were achieved by different pipelines. &
+        Partially supported \\
+        \addlinespace
+
+        RQ2 &
+        Reranking and hybrid reranking increased retrieval latency. Hybrid reranking improved retrieval quality compared with hybrid retrieval alone, but had the highest retrieval time. &
+        Supported \\
+        \addlinespace
+
+        RQ3 &
+        Generation time dominated query-time cost in most local pipelines. Retrieval time became more important when reranking was added. &
+        Supported \\
+        \addlinespace
+
+        RQ4 &
+        \ac{HPC} execution reduced total runtime for all six pipelines, but did not improve every timing component uniformly. &
+        Partially supported \\
+        \bottomrule
+    \end{tabular}
+    \caption{Summary of research-question answers and hypothesis outcomes.}
+    \label{tab:conclusion-rq-summary}
+\end{table}
 
 \section{Key Contributions}
-The main contributions of the thesis are expected to include:
+
+The main contributions of this thesis are:
 
 \begin{itemize}
-    \item a focused explanation of LLM application approaches, including prompting, RAG, fine-tuning, and training from scratch;
-    \item a practical implementation of five comparable RAG pipelines;
-    \item a local benchmark comparison of those pipelines;
-    \item a reproducible workflow designed so the same files can be executed on HPC;
-    \item a combined timing and output-quality evaluation framework; and
-    \item a final local-versus-HPC comparison
+    \item a focused explanation of \ac{LLM} application approaches, including prompting, \ac{RAG}, fine-tuning, and training from scratch;
+    \item a practical implementation of six comparable retrieval-level \ac{RAG} pipelines;
+    \item a controlled local benchmark comparing answer quality, retrieval quality, and timing across the six pipelines;
+    \item a reproducible notebook-based workflow with shared result logging and deterministic evaluation scripts;
+    \item a scenario-based evaluation framework using a synthetic enterprise corpus and manually selected supporting evidence;
+    \item a local-versus-\ac{HPC} timing comparison of the same six pipeline structures; and
+    \item an analysis of the trade-offs between retrieval design, answer quality, retrieval quality, and runtime cost.
 \end{itemize}
 
 \section{Limitations}
 
+Some important constraints to bear in mind for this thesis include: firstly, the evaluation corpus is artificial and of limited size. It has been constructed to represent typical corporate style documents, although it does not demonstrate the full extent of either the size, noise levels or diversity that can exist within actual commercial document collections.
+
+Secondly, the evaluation examines five distinct application scenarios. In each scenario, the queries are applied to differing types of search tasks (direct lookup, procedural search, multi-disciplinary reasoning, security policy retrieval, and operational support) and while these do provide a good range of application-based searches, there are insufficient numbers of scenarios to allow for extensive statistical generalisation.
+
+Thirdly, manual scoring employs a simplistic 'correctness' based metric. While this provides complete transparency into how answers have been scored, it is likely that such a method will fail to accurately assess many other aspects of answer quality that could potentially impact on user experience, such as the tone, completeness, confidence etc., of answers provided at the sentence level.
+
+Lastly, both the local- versus \ac{HPC} comparisons are workflow level deployments, as opposed to being pure hardware benchmarks. Both the local and \ac{HPC} workflows employ similar pipeline structures and timing categories. However, the two workflows utilise fundamentally different server-side architectures and some differing back-end model configurations. Hence, whilst the \ac{HPC} timings are indicative of the timing characteristics exhibited by the implemented workflow architecture, they are not independent measures of pure hardware performance.
 
 \section{Future Work}
 
+Possible extensions to this thesis can also lead into many other directions. The first area for extension is that the proposed evaluation should be conducted on a much larger and more realistic collection of documents than were used here. As an example, the use of noisy or very long documents and/or documents representing various organizational structures (i.e., hierarchical) will allow for determining if the previously retrieval patterns hold true in a more practical application.
+
+The second area for extension would be to increase the number of scenarios included in the current five. An increased number of test scenarios will provide a basis for better statistical analysis as well as provide a means to easily compare answers across various categories.
+
+A third potential area for extension would involve comparing larger models within the same model family in the \ac{HPC} environment. The current thesis did not include this type of evaluation, however, investigating how much the increased processing power available in the \ac{HPC} environment increases the quality of answers produced by larger models is important.
+
+A fourth area for extension is to design a strict hardware-only comparison where all aspects of the model-serving stack, the embedded model, the reranking model, and the vector database are identical in both local and \ac{HPC} environments. Such a comparison will facilitate isolating the effects of the execution environment on RAG behavior.
+
+A fifth potential area for extension involves recording other deployment metrics such as queue time, service start-up time, data transfer times, memory utilization, GPU utilization and through-put while responding to concurrent queries. Recording these additional metrics will enable a more comprehensive understanding of \ac{RAG} behavior in real-world \ac{HPC} deployments.
+
+Finally, there are a number of areas that need further investigation regarding automated \ac{RAG} evaluation techniques. Specifically, we wish to investigate faithfulness scoring, citation accuracy, hallucination detection and human evaluation involving multiple annotators.
 
 \section{Final Remarks}
 
+This thesis illustrated that retrieval-level \ac{RAG} optimization is associated with tradeoffs in terms of quality of retrieval (quality of answers), quality of the answer (runtime costs). The experimental data shows that better components for the retrieval process does not directly lead to better quality of manual answers as well as longer times for added retrieval stages will have a negative impact on latency even if they provide greater retrieval coverage.
+
+The \ac{HPC} results show that moving the workflow from a local machine to an \ac{HPC} environment can dramatically reduce overall time for a run; particularly for workload heavy on generative processes. Nevertheless, the results also show that each component of the process has its own optimal level of benefit. For example, retrieval-based operations including vector database access or service interactions can experience significant overheads which cannot simply be reduced through use of a larger environment to execute in.
+In general, this research provides a framework to reproduce comparison of variants of \ac{RAG} pipelines within local execution environments as well as \ac{HPC} execution environments and demonstrates the value of considering both quality and performance.

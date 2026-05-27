@@ -1,12 +1,14 @@
 \chapter{Results and Discussion}
 
 \section{Introduction}
-This Chapter describes and evaluates the data collected during the execution stages (both local and HPC). The evaluation of the RAG variants is performed with respect to timing, retrieval quality, and answer quality, as specified in Chapters 4 and 5.
 
-\textcolor{red}{TODO: ADD HPC RESULTS OVERVIEW AFTER FINAL HPC TESTING.}
+This chapter presents the outcomes from the two stages of execution (local and \ac{HPC}) of this work. The local stage is concerned with measuring the time for the three types of processing (retrieval, quality of answers and overall run-time). These are detailed within chapters 4 and 5. A comparative analysis will be undertaken to determine how well each of these stages has performed relative to one another in terms of their run-times.
+
+At the local level it can be seen that the performance of the three elements of the pipeline (retrieval, quality of answers and run-time) do not necessarily progress in tandem. At the \ac{HPC} level we will compare the run-time performances of all six variations of the pipeline in an alternative execution environment.
 
 \section{Results of the Local Runs }
-For the six local versions, namely an in-memory version, a Milvus-based vector database version, a tuned Milvus-based vector database version, a dense reranking version, a hybrid-retrieval version, and a hybrid-reranking version, the averaged results are shown in Table~\ref{tab:local-results-summary}.
+
+For the six local versions, namely an in-memory version, a Milvus-based vector-database version, a tuned Milvus-based vector-database version, a dense reranking version, a hybrid-retrieval version, and a hybrid-reranking version, the averaged results are shown in Table~\ref{tab:local-results-summary}.
 
 \begin{table}[htbp]
     \centering
@@ -28,10 +30,11 @@ For the six local versions, namely an in-memory version, a Milvus-based vector d
     }
 \end{table}
 
-As indicated by Table~\ref{tab:local-results-summary}, the best results for both manual answer scores (answer quality) and retrieval F1 (retrieval quality), were obtained using different pipelines. Thus it is clear that while there was a correlation between these two aspects of overall pipeline performance, they are not synonymous. It may be possible to obtain high-quality retrieved content in terms of relevance, but fail to generate the complete or correct answer due to the lack of detail selection during generation.
+As indicated by Table~\ref{tab:local-results-summary}, the best manual answer score and the best retrieval F1 were obtained by different pipelines. This shows that answer quality and retrieval quality are related but not equivalent. A pipeline may retrieve relevant evidence but still generate an incomplete answer if the model does not select the required operational details. On the contrary, a pipeline may produce a strong answer in a small scenario set even if its retrieval metrics are not the highest overall.
 
 \subsection{Local Timing Comparison}
-Figure~\ref{fig:timing-breakdown} illustrates the average execution time for each of the local runs. The simplest in-memory pipeline was able to index faster than all other configurations with an average of 17.65 seconds. The pipelines that utilized a Milvus backend took longer to index since the document chunks and their corresponding embeddings were being stored on an external vector database. The reranking and hybrid-reranking pipelines had the longest indexing times (57.69 and 62.96 seconds) as these are configured to perform additional retrieval operations and therefore have a greater number of steps within their setups.
+
+Figure~\ref{fig:timing-breakdown} illustrates the average execution time for each local run. The simplest in-memory pipeline indexed the corpus fastest, with an average indexing time of 17.65 seconds. The Milvus-supported pipelines took longer to index because document chunks and embeddings had to be prepared and stored through the vector-database backend. The reranking and hybrid-reranking pipelines had the longest indexing times in the local results, which reflects the additional setup and component initialisation required by the more complex pipeline configurations.
 
 \begin{figure}[htbp]
     \centering
@@ -40,12 +43,13 @@ Figure~\ref{fig:timing-breakdown} illustrates the average execution time for eac
     \label{fig:timing-breakdown}
 \end{figure}
 
-Retrieval times were very short for the basic pipeline, the original vector database pipeline, and the tuned vector database pipeline. The Basic pipeline took on average 0.067 seconds, the Original Vector Database Pipeline took on average about 0.104 seconds, and the Tuned Vector Database Pipeline took on average about 0.103 seconds. The use of a Hybrid Retrieval method resulted in longer retrieval times with an average of 0.175 seconds and, as expected, Reranking caused longer retrieval times since another cross encoder pass was made to the Candidate Set. The longest retrieval time was from the Hybrid-Reranking Pipeline with an average of 2.988 seconds.
+Retrieval times were very short for the basic pipeline, the vector-database pipeline, and the tuned vector-database pipeline. The basic pipeline took 0.067 seconds on average, the vector-database pipeline took 0.104 seconds, and the tuned vector-database pipeline took 0.103 seconds. Hybrid retrieval increased average retrieval time to 0.175 seconds. Reranking caused a larger increase because an additional cross-encoder scoring step was applied to the candidate set. The longest retrieval time was produced by the hybrid-reranking pipeline, with an average of 2.988 seconds.
 
 The generation times for each implementation were greater than the retrieval times for each implementation. The VectorDB pipeline had the lowest average generation time with an average of 21.95 seconds and the Hybrid-Reranking pipeline had the largest average generation time with an average of 35.79 seconds. This indicates that in this local environment, the language-model generation step dominated the per-query response cost. Thus, although retrieval optimization is important, the latency difference was substantially less than that due to generation latency, other than when using a Hybrid-Reranking pipeline.
 
 \subsection{Local Retrieval and Answer Quality}
-Figure~\ref{fig:answer-quality} provides an answer-quality comparison. Of the pipelines shown in Figure~\ref{fig:answer-quality}, the Basic Pipeline received the highest Manual Score at 0.80 which included 2 \textit{Correct Answers} and 1 \textit{Partially-Correct Answer}. All other pipelines had scores that were lower than the Basic Pipeline. Vector-Database had a score of 0.60 as did Tuned Vector Database and Hybrid-Reranking. Reranking had a score of 0.50 while Hybrid was slightly lower with a score of 0.40.
+
+Figure~\ref{fig:answer-quality} compares the local answer-quality metrics. The basic pipeline received the highest manual score, with an average of 0.80. The vector-database, tuned vector-database, and hybrid-reranking pipelines each achieved a manual score of 0.60. The reranking pipeline scored 0.50, while the hybrid pipeline had the lowest manual score at 0.40.
 
 \begin{figure}[htbp]
     \centering
@@ -65,7 +69,7 @@ As shown in Figure~\ref{fig:retrieval-quality}, the vector-database-pipeline pro
     \label{fig:retrieval-quality}
 \end{figure}
 
-The results from this local test indicate that hybrid pipeline performance did not improve overall search quality. Hybrid search is expected to improve performance as a combination of both lexical and semantic cues can enhance search results. However, neither the Milvus hybrid configuration nor the small number of scenarios used in this study provided a significant improvement over the dense-vector database-pipeline.
+The results from this local test indicate that hybrid pipeline performance did not improve overall search quality. Hybrid search is expected to improve performance as a combination of both lexical and semantic cues can enhance search results. However, neither the Milvus hybrid configuration nor the small number of scenarios used in this study provided a significant improvement over the dense-vector-database pipeline.
 
 The hybrid-reranking variant improved retrieval quality in comparison to the hybrid-only variant; however, there was also a large increase in retrieval time.
 
@@ -78,6 +82,8 @@ Manual score-by-scenario in Figure~\ref{fig:scenario-heatmap} shows that scenari
     \label{fig:scenario-heatmap}
 \end{figure}
 
+Figure~\ref{fig:radar-chart} summarizes a multi-metric overview of the same local trade-off, demonstrating that no pipeline is dominant across all quality measurements.
+
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.85\textwidth]{images/fig13_radar_chart.png}
@@ -87,53 +93,109 @@ Manual score-by-scenario in Figure~\ref{fig:scenario-heatmap} shows that scenari
 
 \section{HPC Deployment Results}
 
-\textcolor{red}{TODO: ADD HPC TIMING RESULTS, QUALITY METRICS, NODE DETAILS, SCHEDULER SETTINGS, CONTAINER SETUP, STORAGE PATHS, AND SERVICE STARTUP OVERHEADS AFTER FINAL HPC TESTING.}
+The \ac{HPC} phase ran the same six \ac{RAG} pipeline architectures (and the five scenario question types) that were used in the local workflow. This section's comparison will be limited to the timing data collected by the two workloads. Because the local and \ac{HPC} workflows are running with differing model-serving backends, and differing backend models for some of them, the comparison will be viewed strictly as a workflow level timing study, and not as a hardware-based benchmark.
 
-\section{Local versus HPC Comparison}
+For all six pipelines, generation time was significantly better when the \ac{HPC} workflow was deployed. Generation speed-ups compared to the local workflow ranged from \textit{7.390$\times$} for the hybrid pipeline to \textit{10.518$\times$} for the tuned vector-database pipeline. Indexing time was also better for each of the pipelines run; however, the best improvement in indexing speed was seen in the basic pipeline at a \textit{10.164$\times$} speed-up.
 
-\textcolor{red}{TODO: COMPARE EACH PIPELINE LOCALLY AND ON HPC USING THE SAME SCENARIO IDS, IMPLEMENTATION NAMES, TIMING FIELDS, RETRIEVAL METRICS, AND ANSWER-QUALITY METRICS AFTER FINAL HPC TESTING.}
+Retrieval time did not behave as predictably. The basic, reranking, and hybrid-reranking pipelines performed faster on \ac{HPC} in terms of retrieval time. Conversely, the vector-database, tuned vector-database, and hybrid pipelines performed worse (slower) on \ac{HPC}.
+
+\section{Local versus HPC comparison}
+
+Table~\ref{tab:local-hpc-speed-up-summary} summarizes the local-versus-HPC timing comparison. Speed-up is calculated as local time divided by HPC time, so values greater than 1 indicate faster execution on HPC and values below 1 indicate slower execution on HPC.
+
+\begin{table}[htbp]
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{lrrrrrr}
+        \toprule
+        Pipeline & Local total (s) & HPC total (s) & Index speed-up & Retrieval speed-up & Generation speed-up & Total speed-up \\
+        \midrule
+        Basic & \textbf{45.188} & \textbf{4.955} & \textbf{10.164$\times$} & 2.454$\times$ & 8.609$\times$ & \textbf{9.120$\times$} \\
+        VectorDB & 57.479 & 16.362 & 2.559$\times$ & 0.369$\times$ & 9.810$\times$ & 3.513$\times$ \\
+        VectorDB Tuned & 68.640 & 16.017 & 2.871$\times$ & 0.623$\times$ & \textbf{10.518$\times$} & 4.285$\times$ \\
+        Reranker & 87.150 & 18.004 & 4.193$\times$ & 2.412$\times$ & 7.512$\times$ & 4.841$\times$ \\
+        Hybrid & 60.563 & 18.453 & 2.420$\times$ & 0.296$\times$ & 7.390$\times$ & 3.282$\times$ \\
+        Hybrid + Rerank & 101.738 & 19.343 & 4.257$\times$ & \textbf{3.819$\times$} & 9.489$\times$ & 5.260$\times$ \\
+        \bottomrule
+    \end{tabular}
+    }
+    \caption{Local versus HPC timing speed-up summary.}
+    \label{tab:local-hpc-speed-up-summary}
+\end{table}
+
+Figure~\ref{fig:mean-total-time} visualizes the total runtime comparison between local and \ac{HPC} execution for each pipeline.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/mean_total_time.png}
+    \caption{Mean total runtime for each RAG pipeline in the local and HPC environments.}
+    \label{fig:mean-total-time}
+\end{figure}
+
+In terms of total runtime, \ac{HPC} execution reduced runtime for every pipeline. However, the component-level speed-ups varied. Indexing and generation improved across all pipelines, while retrieval showed the most variability. Retrieval speed-up values below \(1\times\) indicate that retrieval was slower on \ac{HPC}. This occurred for the vector-database, tuned vector-database, and hybrid pipelines. These results suggest that vector-database access, service interaction, storage behaviour, or network overhead can outweigh the benefit of \ac{HPC} resources for short retrieval operations.
+
+Figure~\ref{fig:speedup-heatmap} shows the component-level speed-up patterns. Values greater than \(1\times\) indicate faster execution on \ac{HPC}, while values below \(1\times\) indicate slower execution on \ac{HPC}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{images/speedup_heatmap.png}
+    \caption{Speed-up heatmap comparing local and HPC execution across indexing, retrieval, generation, and total runtime.}
+    \label{fig:speedup-heatmap}
+\end{figure}
 
 \section{Effectiveness of Retrieval-Level Optimization Techniques}
+
 Local results showed mixed effectiveness for retrieval-level optimization techniques. Dense retrieval using Milvus-backed vectors enhanced local F1 scores compared to the in-memory baseline but did not improve manual answer score. This suggests that storing vectors persistently provides a stronger foundation for retrieving data without always enhancing generative quality.
 
-The tuned vector-database run yielded better ROUGE-L, BERTScore and semantic similarity than the original vector database run; however it also decreased local retrieval F1 score. Larger chunks may have given the generator more complete context while also making source-level retrieval less accurate. This supports treating chunk size as an experimental parameter with meaning, rather than just a technical process choice.
+The tuned vector-database run yielded better ROUGE-L, BERTScore and semantic similarity than the original vector-database run; however it also decreased local retrieval F1 score. Larger chunks may have given the generator more complete context while also making source-level retrieval less accurate. This supports treating chunk size as an experimental parameter with meaning, rather than just a technical process choice.
 
-Reranking did not enhance local manual score in this particular experiment and caused average retrieval latency to increase from the sub-second range to more than one second on average. The hybrid-reranking pipeline was better than hybrid retrieval alone and equivalent to the manual score of the vector database variant, but had the longest times for both retrieval and generation. Thus, reranking introduced a clear cost, while its quality benefit was limited for this corpus and scenario set.
+Reranking did not enhance local manual score in this particular experiment and caused average retrieval latency to increase from the sub-second range to more than one second on average. The hybrid-reranking pipeline was better than hybrid retrieval alone and equivalent to the manual score of the vector-database variant, but had the longest times for both retrieval and generation. Thus, reranking introduced a clear cost, while its quality benefit was limited for this corpus and scenario set.
 
-\textcolor{red}{TODO: ADD HPC FINDINGS FOR RETRIEVAL-LEVEL OPTIMIZATION AFTER FINAL HPC TESTING.}
+The results of the \ac{HPC} timing also make a significant point about the overall (local) level of retrieval performance. The basic pipeline achieved the greatest total speed-up during \ac{HPC} execution; however, this is not to say that the basic pipeline will generate better retrieval quality than the other pipelines; rather, it merely generated the largest benefit in terms of runtime as a result of \ac{HPC} execution. Likewise, both the generation and indexing times were improved by \ac{HPC} on the Milvus-based pipelines, which contributed to their respective improvements in total runtime, whereas the retrieval time in each of the VectorDB, VectorDB-Tuned, and Hybrid pipelines was actually longer than before. In conclusion, these results support the notion that at the retrieval level, optimizations and costs associated with execution are distinct.
+
+Figure~\ref{fig:stacked-runtime-components} shows how indexing, retrieval, and generation contribute to total runtime in both environments.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{images/stacked_runtime_components.png}
+    \caption{Runtime component breakdown for local and HPC execution.}
+    \label{fig:stacked-runtime-components}
+\end{figure}
 
 \section{Research Questions and Hypotheses}
-\textcolor{red}{add to all HPC}
-The local results answer the retrieval-focused research questions more clearly than the deployment-focused questions, because the final \ac{HPC} result values still need to be added. For \textbf{RQ1}, the results show that retrieval technique affects retrieval quality and answer quality differently. The VectorDB pipeline achieved the highest retrieval F1, while the Basic pipeline achieved the highest manual answer score. Therefore, \textbf{H1 is only partially supported}: hybrid retrieval and reranking did not produce the strongest overall local results, although hybrid reranking improved over hybrid-only retrieval.
 
-For \textbf{RQ2}, the results support the expected performance trade-off. Reranking and hybrid reranking increased retrieval latency compared with the basic and vector-database pipelines. Therefore, \textbf{H2 is supported} in the local results: additional retrieval stages increase retrieval cost, and the pipeline with stronger retrieval components is not necessarily the fastest or the best in manual answer quality.
+The results address the research question through isolating the local retrieval/answer-quality findings from the local vs. \ac{HPC} timing findings.
 
-For \textbf{RQ3}, caching, batching, and parallelism are treated as system-level strategies connected to the \ac{HPC} workflow. The local results do not independently isolate these variables, so \textbf{H3 cannot be fully evaluated from the local results alone}.
+For \textbf{RQ1}, the results show that retrieval techniques have an impact on both retrieval quality and answer quality; however, they are not always positive. The vector-database pipeline produced the highest retrieval F1 value, while the basic pipeline produced the highest manual answer score. Thus, \textbf{H1} is partially supported: Changing the retrieval pipeline will positively affect both retrieval and answer outcomes; however, hybrid retrieval and reranking did not produce the best overall local results.
 
-\textcolor{red}{TODO: ADD H3 ASSESSMENT AFTER FINAL HPC TESTING.}
+As for \textbf{RQ2}, the results confirm a previously established performance trade off. Reranking and hybrid reranking added to the retrieval latency for each of the basic and vector-database pipelines. Hybrid reranking outperformed hybrid retrieval as far as retrieval F1 goes, but it also resulted in the longest retrieval time. Thus, \textbf{H2} is supported: Adding additional retrieval stages increases the retrieval costs. Further, simply increasing the strength of a retrieval component does not automatically lead to faster answers or higher quality scores.
 
-For \textbf{RQ4}, the thesis compares the same \ac{RAG} workflow across local and \ac{HPC} execution, including the possibility of larger open-source models from the same model family. \textbf{H4 requires the final \ac{HPC} timing and quality results before it can be confirmed, rejected, or partially accepted}.
+As far as \textbf{RQ3} is concerned, the timing results indicate that generation time accounts for the majority of query time in almost all of the local pipelines. In addition, the basic, vector-database, tuned vector-database, and hybrid pipelines generate at least one order of magnitude less time than generating an answer. On the other hand, indexing time varies greatly among the different local pipelines due to the fact that some of them require more preparation (such as storing vectors), more configuration (such as setting up components) etc. Thus, \textbf{H3} is supported: Generation time is generally the dominant runtime component, while retrieval time becomes significantly more relevant in the case of reranking-based pipelines.
 
-\textcolor{red}{TODO: ADD RQ4 AND H4 CONCLUSION AFTER FINAL HPC TESTING.}
+Finally, for \textbf{RQ4}, the local versus HPC results indicate that all six pipelines were able to achieve a lower total runtime using \ac{HPC}. As far as total speed-up goes, an average total speed-up of 5.05x can be observed with the largest individual speed-up being associated with the basic pipeline. However, the per-component results demonstrate that \ac{HPC} was not equally beneficial for all of the timing categories. Specifically, for three out of four pipelines (vector-database, tuned vector-database, hybrid pipelines) slower times were noticed for retrieval within HPC. Thus, \textbf{H4} is partially supported: HPC execution positively impacted total runtime and generation heavy workload; however, it did not positively impact retrieval time for all of the pipeline variations.
 
 \section{Comparison with Literature}
-The results confirm the body of literature's observations about how RAG performance varies with both retrieval quality and generation characteristics. For example, the research demonstrates that dense retrieval is very successful for a controlled Enterprise Corpus (especially when the predicted evidence exists in documents describing policies, handbooks etc. with the same semantic content). At the same time, one can observe that having a large number of retrievals does not always result in an entirely accurate answer. Even though some evidence was found, some generated answers failed to include at least one required owner, escalation trigger, or accountability condition (e.g., even if there were many sources which contained information about them). 
 
-The reranked results are consistent with the expected computational cost/latency trade-offs documented in past literature. While cross-encoders may significantly improve candidate ordering, they add significant additional processing beyond what occurred during the first retrieval. Given the constraints of the experimental design (i.e., the size of the source corpus, the length of candidate lists, and the number of different evaluation test cases), expectations include a proportionally greater increase in manual quality evaluations of candidates based upon their use of additional computation.
+The results confirm literature surveyed in chapter 3; which stated that \ac{RAG} performance is dependent upon both retrieval quality (the accuracy of what has been found) and generation behavior (how good the generated answers are). On the local results, dense vector retrieval had good results due to the fact that the most likely source of evidence for policy, handbooks, and operation documentation contained semantically related content. But high retrieval scores didn't always correlate with the highest manual answer scores. Therefore, the idea of evaluating \ac{RAG} based on both the quality of the retrieved evidence and the quality of the generated answer has merit.
 
-Hybrid retrieval results were less strong than anticipated. As noted earlier, hybrid retrieval has been presented as a way to combine the benefits of using exact keyword matches along with retrieving relevant documents from a larger source document collection. Nevertheless, achieving the desired performance gains through hybrid retrieval requires careful tuning of parameters including (but certainly not limited to): configuration settings used for hybrid retrieval, source document collection structures, sparsity levels for vectors representing documents, and query types. Therefore, a belief is these local findings provide sufficient justification for cautionary conclusions. Hybrid retrieval should be carefully tuned, evaluated and compared against dense retrieval before being selected for deployment as a replacement for dense retrieval.
+The reranked results are consistent with the typical tradeoff of increased latency for cross-encoder reranking. Reranking is able to enhance candidate ordering by utilizing a more relevant model once candidates have been selected during the initial retrieval phase. However, reranking introduces another processing phase into the overall pipeline. During this thesis, this additional processing introduced significant increases in the time required to complete the retrieval phase of the pipeline, however, it resulted in limited improvements to manual answer quality when considering a very small corpus size and a very small number of test scenarios.
 
-\textcolor{red}{TODO: ADD HPC COMPARISON WITH LITERATURE AFTER FINAL HPC TESTING.}
+The results from the hybrid retrieval experiments were somewhat unexpected. Hybrid retrieval is typically presented as a method to provide exact lexical matching combined with semantic retrieval. However, the local results demonstrated that hybrid retrieval will require extensive tuning before it can be reasonably assumed to produce better results than dense retrieval. A variety of factors including query type, sparse vector configurations, document structures and fusion parameterization can all impact the ability of hybrid retrieval to improve results.
 
-\section{Trade-Offs and Limitations}
-While there are many theoretical trade-offs between this approach and others (e.g., what trade-offs will occur as the number of documents grows), the most relevant trade-off for the immediate future appears to be that between \textit{infrastructure-realism} and \textit{simplicity}. In other words, while the baseline in-memory pipeline produced both the best manual score and the shortest indexing times, it is certainly less like an actual deployable application. On the other hand, the vector database pipeline took longer to index (i.e. to set up) than the baseline in memory pipeline, but it produced better retrieval results (i.e. stronger F1 values) and a more reasonable storage basis.
+The \ac{HPC} timing results support discussions surrounding deployment and model-serving overheads provided in chapter 3. Large generation time improvements demonstrate that the \ac{HPC} serving environment is advantageous for generating heavy workloads. However, slower times for many of the Milvus-based variants demonstrates that \ac{HPC} may not be equally advantageous for all pipeline components. Shorter retrieval operations may result in service interaction times, storage access times or other vector-database overhead times dominating measured times.
 
-There was another trade-off. Namely one between retrieval quality and query-time. As would be expected, reranking (and hybrid reranking) made substantial increases in the time taken to retrieve answers. However, when a comparison was made between hybrid reranking and hybrid retrieval alone, hybrid reranking resulted in slightly better-quality retrievals, even though it did so at a cost of greater query latency. Given these two observations, the trade-off does appear worthwhile to pursue further, however, whether or not to incur this penalty depends on how much value can be placed upon the extra retrieval accuracy.
+\section{Trade-offs and Limitations}
 
-There are several important limitations of this evaluation. (i) First, since the corpus is artificial (synthetic), and since the scenario-set contains only five questions, the results have limited generalizability beyond the specific context used here. (ii) Second, because each candidate was evaluated using only a simple manual rubric, the scores do not reflect all subtle differences in performance. (iii) Third, since the evaluation of each candidate was performed locally, results depend heavily on the runtime environment of Ollama, the models' initial warmup time, the presence/absence of background processes running during testing, and the current state of the Milvus service. 
+There is one major trade-off involved in this study; namely, a balance between ease of implementation and representation of real-world deployment. The in-memory pipeline (basic) was implemented most quickly and was able to produce the best manual score with the shortest indexing time; however, it is less indicative of a scalable production-based retrieval system. On the other hand, the vector-database pipeline had the longest indexing time, but provided the largest improvement over baseline retrieval (i.e., the strongest retrieval F1) and can serve as an example of a more realistic storage base for larger document collections.
 
-\textcolor{red}{TODO: ADD HPC TRADE-OFFS AND LIMITATIONS AFTER FINAL HPC TESTING.}
+Another important trade-off involves retrieving relevant documents versus increasing the time required for queries. reranking and hybrid with reranking both added steps to evaluate each document's relevance. Although the latter technique improved retrieval quality compared to hybrid retrieval alone, it resulted in the longest retrieval times. Therefore, whether or not to pay this additional cost will depend upon how valuable additional retrieval accuracy will be in a particular application setting.
+
+The results from this thesis have several limitations that restrict their generalizability. First, the corpus used is synthetic and there are only five questions in the question-set used in this study. As such, generalization of these results to all possible scenarios is impossible. Second, manual scoring uses a very simple rubric and therefore likely did not fully account for the nuances of answer quality. Finally, the local results are dependent upon the state of the local runtime environment (e.g., Ollama behavior, model warm up, background processes, etc.) as well as the Milvus service.
+
+The major limitation of the \ac{HPC} comparison is that it focused solely on runtime. Thus, while it allows for drawing conclusions regarding indexing time, retrieval time, generation time, and total runtime; it does not allow making conclusions regarding answer quality or retrieval quality. Furthermore, the timing summary provided by the local and \ac{HPC} workflows do not separate out queue time, service startup time, data transfer time and detailed hardware utilization. Additionally, the local and \ac{HPC} workflows utilize different serving stacks and some different backend models; therefore the comparisons made here should be considered at a workflow level deployment comparison rather than a pure hardware comparison.
 
 \section{Summary}
 
-This chapter presented the local results for the six implemented \ac{RAG} pipelines and discussed the main trade-offs between timing, retrieval quality, and answer quality. The local results show that no single pipeline dominated every metric: the Basic pipeline achieved the highest manual score, while the VectorDB pipeline achieved the highest retrieval F1. Reranking and hybrid reranking increased retrieval latency, and their quality benefits were limited for the current corpus and scenario set. The chapter also mapped the local findings back to the research questions and hypotheses, while marking the \ac{HPC}-dependent conclusions that require final \ac{HPC} results.
+This chapter has shown the local and \ac{HPC} results of the six implemented \ac{RAG} pipeline variants. The local analysis revealed there is no single pipeline which achieves the best results at each level (i.e., answer quality, retrieval quality, run-time).
+
+The \ac{HPC} timing comparisons demonstrated that all six pipelines exhibited significantly faster total runtime when executed using \ac{HPC} resources, although the greatest reductions in processing time were observed for the generation time. Conversely, the degree to which each of the pipelines benefited from the use of \ac{HPC} for reducing the amount of time required for retrieving answers varied widely. Moreover, it appears that both the process of accessing stored vectors within databases, as well as the overhead associated with interacting with services can be a significant impediment to rapid retrieval times for relatively short queries.
+
+In summary, the results provide evidence supporting the primary research objective of this thesis that optimizing the performance of retrieval-level \acp{RAG} is contingent upon a variety of trade-offs regarding the quality of answers produced by these systems, the quality of retrievals provided by them, and costs incurred during system execution. Furthermore, the results indicate that executing pipelines via \ac{HPC} methods can potentially reduce overall runtime and may produce greater benefits for those pipelines where generation time dominates overall processing time; however, simply executing pipelines via \ac{HPC} does not guarantee improved performance for each individual component.

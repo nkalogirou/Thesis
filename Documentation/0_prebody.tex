@@ -4,31 +4,33 @@
 
 \chapter*{Declaration}
 \thispagestyle{empty}
-I hereby declare that this thesis is my own work and has not been submitted in any form for another degree or qualification at any university or institution.
+I Nikos Kalogirou with Reg. no. 20231063 in full knowledge of the consequences of plagiarism, hereby solemnly declare that the present thesis titled: \textit{Deployment and Optimization of Large Language Models and Retrieval-Augmented Generation Pipelines on High-Performance Computing Systems} is strictly my own original work and all the sources I have used have been duly and accurately acknowledged in the bibliographical references. The passages where I have used material from other authors are clearly documented in the text and the relevant references are included in the Works Cited section.
 
 \clearpage
-\chapter*{Acknowledgements}
+\chapter*{Acknowledgments}
 \thispagestyle{empty}
 I would like to thank Dr. Christodoulos Stylianou, my supervisor, for his guidance, constructive feedback, and support during the development of this project. His advice helped me focus the work, improve the technical implementation, and structure the thesis. 
 
-I would also like to thank the Department of Computer Science and Engineering at European University Cyprus for providing the academic environment and resources that supported this work. I am grateful to the lecturers and staff who contributed to my studies and helped me build the knowledge needed to complete this project.
+I would also like to acknowledge the use of the Cyclone high-performance computing facility at The Cyprus Institute, which supported the HPC execution stage of this work.
+
+Furthermore, I would like to express my appreciation to the Department of Computer Science and Engineering at European University Cyprus for providing the academic environment and resources that supported this work. I am grateful to the lecturers and staff who contributed to my studies and helped me build the knowledge needed to complete this project.
 
 Finally, I would like to thank my family and friends for their encouragement, patience, and support during the preparation of this thesis. Their motivation and understanding were important throughout the research, implementation, and writing process.
 
 \clearpage
 \chapter*{Abstract}
 \thispagestyle{empty}
-\acp{LLM} are becoming increasingly popular in many different \ac{NLP}-related areas (such as question answering, summarization and information retrieval). However, a \ac{LLM} on its own may provide unsupported answers if the required information exists at a remote location or is specific to a particular area of study. \ac{RAG} solves this problem by first finding all relevant parts of a document collection and then making these available to the \ac{LLM} as context prior to generating the final answer. 
+\acp{LLM} are becoming increasingly popular in many different \ac{NLP}-related areas (such as question answering, summarization and information retrieval). However, \ac{LLM} on its own may provide unsupported answers if the required information exists at a remote location or is specific to a particular area of study. \ac{RAG} solves this problem by first finding all relevant parts of a document collection and then making these available to the \ac{LLM} as context prior to generating the final answer. 
 
-This thesis, examines how to optimize and deploy \ac{RAG} pipelines through comparative analysis of six controlled pipeline configurations: a) in memory baseline b) a Milvus vector database pipeline c) a Milvus vector database pipeline with tuning d) dense retrieval with reranking e) hybrid retrieval without reranking f) hybrid retrieval with reranking. For all six of the pipeline configurations described above, we employ the same synthetic enterprise document collection, same set of five scenarios, same log output format and same evaluation procedure. Thus, the only difference among the six pipeline configurations is in their retrieval strategy.
+This thesis examines how to optimize and deploy \ac{RAG} pipelines through comparative analysis of six controlled pipeline configurations: a) in-memory baseline b) a Milvus vector database pipeline c) a Milvus vector database pipeline with tuning d) dense retrieval with reranking e) hybrid retrieval without reranking f) hybrid retrieval with reranking. For all six of the pipeline configurations described above, we employ the same synthetic enterprise document collection, same set of five scenarios, same log output format and same evaluation procedure. Thus, the only difference among the six pipeline configurations is in their retrieval strategy.
 
 The main comparison uses manual answer score to measure answer correctness and for the retrieval it uses the F1 score to measure how well precision and recall are balanced when the retrieved documents are compared with the expected supporting evidence.
 
-The local results showed that none of the pipelines could have the best F1 scores for both the retrieval and the answers. The pipeline that utilized in-memory data had the highest manual answer mean score, the Milvus based pipeline had the highest average retrieval F1. In some cases reranked search provided better results than a simple first pass, however there was an increase in time to retrieve. Overall these are good indicators that simply having a "better" search engine does not guarantee getting the most accurate answers, as well as all components need to be evaluated to determine if they add sufficient benefits to warrant their costs.
+The local results showed that no single pipeline achieved the optimal F1 score for both the retrieval and the answers. The pipeline that utilized in-memory data had the highest manual answer mean score, the Milvus based pipeline had the highest average retrieval F1. In some cases reranked search provided better results than a simple first pass, however there was an increase in time to retrieve. Overall these are good indicators that simply having a "better" search engine does not guarantee getting the most accurate answers, as well as all components need to be evaluated to determine if they add sufficient benefits to warrant their costs.
 
-\textcolor{red}{TODO: ADD HPC RESULT HIGHLIGHTS AFTER HPC TESTING.}
+The \acf{HPC} evaluation compared the six workflows run locally to the \ac{HPC} environment utilizing only time based comparisons. Each of the six workflows experienced a reduction in total runtime when running on the \ac{HPC} platform. An overall average speedup of approximately \texttt{5.05$\times$} times was observed by each of the six pipelines. The greatest total speedup was seen for the basic pipeline configuration. Generation time improvement existed in each of the configurations; however, the improvement in retrieval time was inconsistent among the Milvus based configurations. Some of these configurations resulted in longer retrieval times than their respective base configuration when run on \ac{HPC} indicating that the cost associated with interacting with services, accessing storage and retrieving data from a vector database may be higher than expected when performing short retrieval operations.
 
-The overall framework that has been created in this thesis is a structured local analysis of \ac{RAG} variants using timing-based performance evaluations, quality assessments based on retrieval characteristics, quality assessments of answers generated by models, and a fully reproducible experiment workflow to run and log experiments on both local and \ac{HPC} environment. The full training of models, the fine-tuning of models, the compression of trained models, as well as large scale multi-node benchmarking are beyond the scope of this research.
+The overall framework that has been created in this thesis is a structured local analysis of \ac{RAG} variants using timing-based performance evaluations, quality assessments based on retrieval characteristics, quality assessments of answers generated by models, and a fully reproducible experiment workflow to run and log experiments in both local and \ac{HPC} environment. The full training of models, the fine-tuning of models, the compression of trained models, as well as large scale multi-node benchmarking are beyond the scope of this research.
 
 \clearpage
 \chapter*{List of Abbreviations}
@@ -66,12 +68,11 @@ The overall framework that has been created in this thesis is a structured local
 \acro{MLPerf}{Machine Learning Performance Benchmark Suite}
 \acro{PFS}{Parallel File System}
 \acro{GPFS}{General Parallel File System}
-\acro{IO}{Input/Output}
+\acro{I/O}{Input/Output}
 \acro{TCO}{Total Cost of Ownership}
 \acro{OCI}{Open Container Initiative}
 \acro{SLURM}{Simple Linux Utility for Resource Management}
 \acro{SIF}{Singularity Image Format}
-\acro{SFT}{Supervised Fine-Tuning}
 \acro{LSTM}{Long Short-Term Memory}
 \acro{GRU}{Gated Recurrent Unit}
 \acro{GPT}{Generative Pre-trained Transformer}
@@ -80,7 +81,6 @@ The overall framework that has been created in this thesis is a structured local
 \acro{ROUGE-L}{Recall-Oriented Understudy for Gisting Evaluation - Longest Common Subsequence}
 \acro{BERTScore}{Bidirectional Encoder Representations from Transformers Score}
 \acro{AWS}{Amazon Web Services}
-\acro{I/O}{Input/Output}
 \acro{vLLM}{Virtual Large Language Model}
 \acro{FP32}{Single-Precision Floating-Point (32-bit)}
 \acro{FP16}{Half-Precision Floating-Point (16-bit)}
@@ -90,6 +90,8 @@ The overall framework that has been created in this thesis is a structured local
 \acro{AWQ}{Activation-aware Weight Quantization}
 \acro{KV-cache}{Key-Value Cache}
 \acro{KILT}{Knowledge Intensive Language Tasks}
+\acro{HPCF}{The Cyprus Institute High Performance Computing Facility}
+\acro{MiniLM}{Minimally Distilled Language Model.}
 \end{acronym}
 
 \clearpage
