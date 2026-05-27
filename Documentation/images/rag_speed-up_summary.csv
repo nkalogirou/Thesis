@@ -1,7 +1,0 @@
-Implementation,Model,Local Indexing (s),HPC Indexing (s),Indexing Speed-up (×),Local Retrieval (s),HPC Retrieval (s),Retrieval Speed-up (×),Local Generation (s),HPC Generation (s),Generation Speed-up (×),Local Total (s),HPC Total (s),Total Speed-up (×)
-basic,Basic,17.650,1.736,10.164,0.067,0.027,2.454,27.471,3.191,8.609,45.188,4.955,9.120
-vectordb,VectorDB,35.428,13.843,2.559,0.104,0.281,0.369,21.947,2.237,9.810,57.479,16.362,3.513
-vectordb_tuned,VectorDB Tuned,36.868,12.841,2.871,0.103,0.165,0.623,31.669,3.011,10.518,68.640,16.017,4.285
-reranker,Reranker,57.689,13.759,4.193,1.148,0.476,2.412,28.313,3.769,7.512,87.150,18.004,4.841
-hybrid,Hybrid,34.867,14.410,2.420,0.175,0.590,0.296,25.521,3.453,7.390,60.563,18.453,3.282
-hybrid_rerank,Hybrid + Rerank,62.960,14.789,4.257,2.988,0.782,3.819,35.790,3.772,9.489,101.738,19.343,5.260

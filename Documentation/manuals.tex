@@ -4,7 +4,267 @@
 \section*{Installation Manual}
 \addcontentsline{toc}{section}{Installation Manual}
 
+\subsection*{Purpose and Scope}
+\addcontentsline{toc}{subsection}{Purpose and Scope}
+
+This manual explains how to prepare the software environment used by the thesis experiments. The project contains two execution paths: a local workflow using Jupyter, Ollama, Docker, and Milvus; and an \ac{HPC} workflow using Slurm-managed vLLM services. The local workflow is used for the main retrieval-quality and answer-quality evaluation. The \ac{HPC} workflow is used for the timing comparison described in Chapters~5 and~6.
+
+\subsection*{Required Software for Local Execution}
+\addcontentsline{toc}{subsection}{Required Software for Local Execution}
+
+The local workflow requires the following software:
+
+\begin{itemize}
+    \item Python 3.12 or a compatible Python 3 version supported by the project dependencies;
+    \item Jupyter Notebook or JupyterLab;
+    \item Docker, used to run Milvus in standalone mode;
+    \item Ollama, used to serve the local generation and embedding models;
+    \item the Python packages listed in \texttt{requirements.txt}.
+\end{itemize}
+
+The local models required through Ollama are:
+
+\begin{itemize}
+    \item \texttt{llama3.1} or \texttt{llama3.1:8b} for answer generation;
+    \item \texttt{mxbai-embed-large} for embeddings.
+\end{itemize}
+
+\subsection*{Local Installation Steps}
+\addcontentsline{toc}{subsection}{Local Installation Steps}
+
+\begin{enumerate}
+    \item Open a terminal in the project root directory.
+    \item Create and activate a virtual environment:
+
+    \begin{quote}
+    \small\ttfamily
+    python3.12 -m venv .venv\\
+    source .venv/bin/activate
+    \end{quote}
+
+    \item Install the Python dependencies:
+
+    \begin{quote}
+    \small\ttfamily
+    python -m pip install --upgrade pip\\
+    python -m pip install -r requirements.txt
+    \end{quote}
+
+    \item Start the Ollama service in a separate terminal:
+
+    \begin{quote}
+    \small\ttfamily
+    ollama serve
+    \end{quote}
+
+    \item Download the required local models:
+
+    \begin{quote}
+    \small\ttfamily
+    ollama pull llama3.1\\
+    ollama pull mxbai-embed-large
+    \end{quote}
+
+    \item Start Milvus before running any vector-database, reranking, hybrid, tuned-vector, or hybrid-reranking notebook:
+
+    \begin{quote}
+    \small\ttfamily
+    bash scripts/standalone\_embed.sh start
+    \end{quote}
+
+    \item Start Jupyter:
+
+    \begin{quote}
+    \small\ttfamily
+    jupyter notebook
+    \end{quote}
+\end{enumerate}
+
+The in-memory baseline notebook does not require Milvus. All other local pipeline notebooks require Milvus to be running.
+
+\subsection*{Milvus Management}
+\addcontentsline{toc}{subsection}{Milvus Management}
+
+The project includes \texttt{scripts/standalone\_embed.sh} for managing the local Milvus container. The main commands are:
+
+\begin{itemize}
+    \item Start Milvus: \texttt{bash scripts/standalone\_embed.sh start}
+    \item Stop Milvus: \texttt{bash scripts/standalone\_embed.sh stop}
+    \item Restart Milvus: \texttt{bash scripts/standalone\_embed.sh restart}
+    \item Delete the Milvus container and local Milvus data: \texttt{bash scripts/standalone\_embed.sh delete}
+\end{itemize}
+
+The delete command removes local Milvus runtime data and should only be used when a clean vector-database state is required.
+
+\subsection*{HPC Installation and Service Preparation}
+\addcontentsline{toc}{subsection}{HPC Installation and Service Preparation}
+
+The \ac{HPC} workflow is designed for the Cyclone cluster environment. It uses Slurm to launch model-serving jobs and Jupyter. The user should first log in to the cluster:
+
+\begin{quote}
+\small\ttfamily
+ssh <username>@front01.hpcf.cyi.ac.cy
+\end{quote}
+
+If the generation model requires Hugging Face access, create a local environment file on the cluster and store the token there. The token must not be committed to version control:
+
+\begin{quote}
+\small\ttfamily
+cd \textasciitilde/Thesis\\
+cp .env.example .env\\
+chmod 600 .env
+\end{quote}
+
+Then edit \texttt{.env} and set \texttt{HF\_TOKEN}. The \ac{HPC} service launch scripts read this file when needed.
+
+The vLLM services used by the \ac{HPC} workflow are:
+
+\begin{itemize}
+    \item generation service: \texttt{meta-llama/Llama-3.1-8B-Instruct};
+    \item embedding service: \texttt{BAAI/bge-m3};
+    \item reranking service: \texttt{BAAI/bge-reranker-base}.
+\end{itemize}
+
+To start the services, run the service launcher from the vLLM launcher directory:
+
+\begin{quote}
+\small\ttfamily
+cd \textasciitilde/Thesis/rag-training2025-main/vllm\\
+bash serve\_models.sh
+\end{quote}
+
+The launcher submits separate Slurm jobs for the language model, embedding model, and reranking model. Each service writes connection information to environment files under \texttt{/nvme/scratch/\$\{USER\}} so that the \ac{HPC} notebooks can connect to the correct endpoints.
+
+To start Jupyter on the cluster:
+
+\begin{quote}
+\small\ttfamily
+cd \textasciitilde/Thesis/scripts\\
+sbatch launch\_jupyter.sh
+\end{quote}
+
+After the job starts, use the generated connection information to create the SSH tunnel and open the Jupyter URL from the local browser.
+
 \newpage
 \section*{User Manual}
 \addcontentsline{toc}{section}{User Manual}
 
+\subsection*{Project Workflow}
+\addcontentsline{toc}{subsection}{Project Workflow}
+
+The project is organised around a fixed experiment sequence. Each pipeline uses the same OrchestrAI document corpus and the same five scenario questions. The main difference between notebooks is the retrieval strategy.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.12\textwidth}>{\raggedright\arraybackslash}p{0.38\textwidth}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Order} & \textbf{Notebook} & \textbf{Use} \\
+\midrule
+1 & \texttt{rag\_basic.ipynb} & Run the in-memory dense retrieval baseline. \\
+2 & \texttt{rag\_vectordb.ipynb} & Run dense retrieval using Milvus. \\
+3 & \texttt{rag\_vectordb\_tuned.ipynb} & Run Milvus dense retrieval with larger chunks and overlap. \\
+4 & \texttt{rag\_reranker.ipynb} & Run dense retrieval followed by reranking. \\
+5 & \texttt{rag\_hybrid.ipynb} & Run hybrid dense and sparse retrieval. \\
+6 & \texttt{rag\_hybrid\_\&\_rerank.ipynb} & Run hybrid retrieval followed by reranking. \\
+\bottomrule
+\end{tabularx}
+\caption{Recommended notebook execution order.}
+\label{tab:manual-notebook-order}
+\end{table}
+
+\subsection*{Running the Local Experiments}
+\addcontentsline{toc}{subsection}{Running the Local Experiments}
+
+\begin{enumerate}
+    \item Start Ollama and confirm the required models are available.
+    \item Start Milvus if the notebook is not the in-memory baseline.
+    \item Open Jupyter from the project root.
+    \item Open the required notebook from \texttt{notebooks/}.
+    \item Run the cells from top to bottom without changing the scenario questions unless a new experiment is being designed.
+    \item Confirm that the notebook writes rows to \texttt{data/results/experimental/rag\_results.csv}.
+    \item Repeat the process for all six notebooks in the order shown in Table~\ref{tab:manual-notebook-order}.
+\end{enumerate}
+
+Each notebook clears or replaces previous rows for its own implementation before writing new rows. This prevents duplicate rows for the same implementation when a notebook is rerun.
+
+\subsection*{Running the HPC Experiments}
+\addcontentsline{toc}{subsection}{Running the HPC Experiments}
+
+\begin{enumerate}
+    \item Log in to the \ac{HPC} system.
+    \item Start the vLLM generation, embedding, and reranking services.
+    \item Submit the Jupyter Slurm job and connect through the SSH tunnel.
+    \item Open the notebooks from \texttt{notebooks-hpc/}.
+    \item Run the same six notebook variants in the same order used locally.
+    \item Confirm that timing rows are written to the \ac{HPC} results file.
+\end{enumerate}
+
+The \ac{HPC} phase is used for workflow-level timing comparison. It should not be interpreted as a pure hardware-only benchmark because the local and \ac{HPC} workflows use different serving stacks and some different backend models.
+
+\subsection*{Manual Ground-Truth Evaluation}
+\addcontentsline{toc}{subsection}{Manual Ground-Truth Evaluation}
+
+After local result rows are generated, the manual evaluation file should be completed in \texttt{data/ground\_truth/rag\_ground\_truth.csv}. The evaluator should inspect the DOCX corpus and fill:
+
+\begin{itemize}
+    \item \texttt{ground\_truth\_answer}: reference answer supported by the corpus;
+    \item \texttt{supporting\_documents}: filenames used as evidence;
+    \item \texttt{manual\_score}: \texttt{1.0}, \texttt{0.5}, or \texttt{0.0};
+    \item \texttt{manual\_label}: \texttt{correct}, \texttt{partially\_correct}, or \texttt{incorrect};
+    \item \texttt{manual\_notes}: short explanation of the score.
+\end{itemize}
+
+The scoring should be strict. A fluent answer should not receive a high score unless it is supported by the corpus and answers the scenario completely.
+
+\subsection*{Running Deterministic Evaluation}
+\addcontentsline{toc}{subsection}{Running Deterministic Evaluation}
+
+After the manual ground-truth file is complete, run:
+
+\begin{quote}
+\small\ttfamily
+python3 src/deterministic\_eval.py
+\end{quote}
+
+This produces:
+
+\begin{itemize}
+    \item \texttt{data/results/experimental/deterministic\_eval\_results.csv}
+    \item \texttt{data/results/experimental/deterministic\_eval\_summary.csv}
+\end{itemize}
+
+The summary file averages answer-quality metrics, retrieval-quality metrics, and timing fields by implementation. These outputs are used to create the tables and figures in the results chapter.
+
+\subsection*{Generating Figures}
+\addcontentsline{toc}{subsection}{Generating Figures}
+
+The local visualisation notebook is \texttt{notebooks/rag\_visualizations.ipynb}. It reads the evaluated outputs and generates charts for answer quality, retrieval quality, timing, scenario-level performance, and multi-metric comparison.
+
+The \ac{HPC} visualisation workflow reads local and \ac{HPC} timing outputs and produces figures for mean timing, speed-up factors, heatmaps, and stacked runtime components. Final thesis figures are placed in \texttt{Documentation/images/} before compilation.
+
+\subsection*{Result Validation Checklist}
+\addcontentsline{toc}{subsection}{Result Validation Checklist}
+
+Before using a run in the thesis, verify that:
+
+\begin{itemize}
+    \item each of the six implementations has five scenario rows;
+    \item every row has a generated answer;
+    \item every row has retrieved source information;
+    \item \texttt{indexing\_time\_s}, \texttt{retrieval\_time\_s}, and \texttt{generation\_time\_s} are present;
+    \item the manual ground-truth file contains supporting documents and notes for every evaluated row;
+    \item deterministic evaluation results were regenerated after any manual scoring changes;
+    \item only curated final outputs are copied into \texttt{data/results/final/} and \texttt{Documentation/images/}.
+\end{itemize}
+
+\subsection*{Common Issues}
+\addcontentsline{toc}{subsection}{Common Issues}
+
+\begin{itemize}
+    \item If Milvus notebooks fail to connect, confirm Docker is running and restart Milvus with \texttt{bash scripts/standalone\_embed.sh restart}.
+    \item If Ollama generation or embedding calls fail, confirm \texttt{ollama serve} is running and that the required models have been pulled.
+    \item If deterministic evaluation fails, confirm that both the results CSV and ground-truth CSV contain matching \texttt{implementation} and \texttt{scenario\_id} values.
+    \item If \ac{HPC} notebooks cannot reach a model service, confirm that the Slurm service jobs are running and that the environment files under \texttt{/nvme/scratch/\$\{USER\}} exist.
+    \item If repeated notebook runs create unexpected results, clear or inspect the implementation rows in the relevant results CSV before rerunning the notebook.
+\end{itemize}
