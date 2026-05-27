@@ -160,7 +160,7 @@ Run the notebooks in this order (local or HPC):
 data/results/experimental/rag_results.csv
 ```
 
-**HPC** — start vLLM and Jupyter per [`READHPC.md`](READHPC.md), then use `notebooks-hpc/`; results go to:
+**HPC** — start vLLM and Jupyter, then use `notebooks-hpc/`; results go to:
 
 ```text
 data/results/experimental/hpc_results.csv
