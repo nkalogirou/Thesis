@@ -4,6 +4,7 @@
 This repository contains multiple Retrieval-Augmented Generation implementations for comparing baseline retrieval, vector database retrieval, reranking, hybrid retrieval, and hybrid retrieval with reranking.
 
 ## Project Structure
+```
 .
 ├── notebooks/                          Local experiments (Ollama + Milvus)
 │   ├── rag_basic.ipynb                 Baseline RAG with in-memory retrieval
@@ -81,7 +82,7 @@ This repository contains multiple Retrieval-Augmented Generation implementations
 ├── requirements.txt                    Python dependencies
 ├── .gitignore
 └── README.md
-
+```
 
 ## Setup
 
