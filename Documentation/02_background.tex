@@ -4,13 +4,13 @@
 
 This chapter establishes the necessary theory for developing and analyzing the \ac{RAG} pipelines that were developed in this thesis. While it will establish some of the underlying theory for the \acfp{LLM}, it will focus primarily on those aspects of the theories that are specifically relevant to retrieval, inference time behaviour and differences between \acf{HPC} and local deployment.
 
-After providing a general introduction to \acp{LLM} and their use of the Transformer architecture, the chapter is intended to clearly distinguish \ac{RAG} as a paradigm for developing large-scale \ac{NLP} applications from several other paradigms which include prompt engineering, fine-tuning and training from scratch. After establishing the primary \ac{RAG} application flow, the chapter covers the different methods for retrieval, reranking, hybrid retrieval and \ac{HPC} concepts relative to this project. Finally, the chapter defines three categories of metrics that will be discussed later in the experimental evaluation: (i) System Performance; (ii) Retrieval Quality; (iii) Answer Quality; (iv) Local vs. HPC Timing Comparison.
+After providing a general introduction to \acp{LLM} and their use of the Transformer architecture, the chapter is intended to clearly distinguish \ac{RAG} as a paradigm for developing large-scale \acf{NLP} applications from several other paradigms which include prompt engineering, fine-tuning and training from scratch. After establishing the primary \ac{RAG} application flow, the chapter covers the different methods for retrieval, reranking, hybrid retrieval and \ac{HPC} concepts relative to this project. Finally, the chapter defines four categories of metrics that will be discussed later in the experimental evaluation: (i) System Performance; (ii) Retrieval Quality; (iii) Answer Quality; (iv) Local vs. HPC Timing Comparison.
 
 \section{Large Language Models (LLMs)}
 
 \subsection{Overview}
 
-\acp{LLM} are deep learning-based language models which enable processing and generating natural language. Generally, these models are trained on massive datasets of text data and statistically learn relationships in natural language, including word, phrase, concept, and context relationships. Due to the nature of their training, \acp{LLM} can be utilized for various applications, including question-answering (QA), document summarization, text generation, and extracting information from documents without explicit task-oriented programming.
+\acp{LLM} are deep learning-based language models which enable processing and generating natural language. Generally, these models are trained on massive datasets of text data and statistically learn relationships in natural language, including word, phrase, concept, and context relationships. Due to the nature of their training, \acp{LLM} can be utilized for various applications, including \ac{QA}, document summarization, text generation, and extracting information from documents without explicit task-oriented programming.
 
 Although, the effectiveness of using \acp{LLM} for real-world applications is directly influenced by the model itself; however, there are numerous factors that influence the effectiveness of the model within a larger system architecture. When utilizing \acp{LLM}, each time an inference operation is requested, the user provides an input query or prompt. After receiving the input prompt, the model processes the prompt layer-by-layer (many times) through a series of transformer layers and generates output tokens one at a time. While, not all operations require significant computational resources, operations involving longer prompts or multiple simultaneous requests may consume considerable resources. Consequently, there are several system-level considerations that can have a substantial impact on the performance experienced by users of \ac{LLM}-based systems.These include prompt length, retrieval design, model serving behaviour, hardware selection, and the way repeated computations are handled.
 
@@ -21,7 +21,7 @@ This research focuses on utilizing an \ac{LLM} as part of a \ac{RAG} system. The
 \begin{figure}[t]
     \centering
     \includegraphics[width=\textwidth]{images/Transformer,_full_architecture.png}
-    \caption[Transformer encoder--decoder architecture]{Transformer encoder--decoder architecture. The diagram shows the main building blocks used to transform input tokens into contextual representations and generated output tokens.}
+    \caption[Transformer encoder--decoder architecture]{Transformer encoder-decoder architecture. The diagram shows the main building blocks used to transform input tokens into contextual representations and generated output tokens. \cite{vaswani2017attention}}
     \label{fig:transformer-architecture}
 \end{figure}
 
@@ -49,9 +49,9 @@ The most important aspect of how the Transformer affects the way it behaves duri
 \subsection{Development Paradigms and Their Effect on LLM Performance}
 \label{subsec:llm_paradigms}
 
-There are a variety of methods to create \acp{LLM}-based applications. Each application development method may influence the behaviour of the model as well as that of the surrounding system. Prompting methods change the model input without changing model weights \cite{liu2023pretrain}, while parameter-efficient methods such as \ac{LoRA} and adapter-based transfer learning update or add trainable parameters to adapt the model \cite{hu2022lora,pfeiffer2021adapterfusion}. This distinction is especially relevant to this thesis because the experiments were designed without optimizing model size; updating the model's weight values; fine-tuning the model; quantization of the model nor pruning the model. Rather, this thesis will focus upon retrieving-level design choices made during \ac{RAG} workflow construction, as well as comparing the performance of those \ac{RAG} workflows within both local computing environments and \ac{HPC} environments.
+There are a variety of methods to create \acp{LLM}-based applications. Each application development method may influence the behaviour of the model as well as that of the surrounding system. Prompting methods change the model input without changing model weights \cite{liu2023pretrain}, while parameter-efficient methods such as \ac{LoRA} and adapter-based transfer learning update or add trainable parameters to adapt the model \cite{hu2022lora,pfeiffer2021adapterfusion}. This distinction is especially relevant to this thesis because the experiments were designed without optimizing model size; updating the model's weight values; fine-tuning the model; quantization of the model nor pruning the model. Rather, this thesis focuses upon retrieving-level design choices made during \ac{RAG} workflow construction, as well as comparing the performance of those \ac{RAG} workflows within both local computing environments and \ac{HPC} environments.
 
-\begin{table}[H]
+\begin{table}[htpb]
 \label{tab:llm-development-paradigms}
 \centering
 \small
@@ -75,13 +75,13 @@ This distinction is important because retrieval-level techniques improve the inf
 
 \subsection{Concept and Motivation}
 
-\ac{RAG} uses a combination of a language model and an external retriever. In this approach instead of only getting the answer from the language models own parameterized knowledge base it first identifies appropriate passage(s) from a document collection, which are used as additional input to provide contextual support to the language model. Using the \ac{RAG} method has been shown to improve factual grounding and decrease the number of unsupported answers produced by the model especially when the query is specific to a particular domain or type of data that may be less frequently represented within the models' parameterized knowledge base \cite{lewis2020rag}.
+\ac{RAG} uses a combination of a language model and an external retriever. In this approach instead of only getting the answer from the language models' own parameterized knowledge base it first identifies appropriate passages from a document collection, which are used as additional input to provide contextual support to the language model. Using the \ac{RAG} method has been shown to improve factual grounding and decrease the number of unsupported answers produced by the model; especially when the query is specific to a particular domain or type of data that may be less frequently represented within the models' parameterized knowledge base \cite{lewis2020rag}.
 
 In this thesis, the use of \ac{RAG} is driven by a real-world constraint; i.e. that it will be simpler to update a document set than to fine-tune or retrain a model each time there are changes in the data on which the model is trained. A \ac{RAG} system can search for and retrieve information from project documentation, user manuals, policies or synthetic datasets as long as you simply update the search space (update the searchable document set) and do not alter the model weights. The added flexibility of this approach generates new design issues relative to loading documents, splitting them into blocks, generating embeddings for the individual blocks, determining if additional ranking is needed, and inserting the found contextual information into the final prompt.
 
 \subsection{Architecture and Workflow}
 
-The \ac{RAG} workflow includes two high-level stages; (i) An indexing stage and (ii) a query-time stage. During the indexing stage, the documents are loaded, cleaned (noise reduction), broken down into manageable pieces (chunks) of data and then embedded using a embedding model for use at query-time. The embedded chunks are then placed in a retrievable structure (e.g., in memory document store or vector database). At query-time, the user question (prompt) is sent through the retrieval process where relevant pieces of data are selected and returned to the system. The selected data is then appended to the prompt and sent to the \ac{LLM} which will generate the final answer.
+The \ac{RAG} workflow includes two high-level stages; (i) An indexing stage and (ii) a query-time stage. During the indexing stage, the documents are loaded, cleaned (noise reduction), broken down into manageable pieces (chunks) of data and then embedded using an embedding model for use at query-time. The embedded chunks are then placed in a retrievable structure (e.g., in memory document store or vector database). At query-time, the user's question (prompt) is sent through the retrieval process where relevant pieces of data are selected and returned to the system. The selected data is then appended to the prompt and sent to the \ac{LLM} which will generate the final answer.
 
 The workflow can be summarized as follows:
 \begin{enumerate}
@@ -89,7 +89,7 @@ The workflow can be summarized as follows:
     \item {\textbf{Indexing:}} Chunks stored in retrieval structure. Dense systems store embeddings, sparse systems store lexical statistics. Hybrid systems use both methods.
     \item {\textbf{Processing of Queries:}} query from user converted to representation needed by retriever.
     \item {\textbf{Retrieval:}} top candidate chunks returned based on lexical similarity, embedding similarity or combination of both.
-    \item {\textbf{[\textit{Optional}] Re-ranking:}} re-ranker re-ranks initial candidates so most relevant chunks will appear first.
+    \item {\textbf{[\textit{Optional}] Re-ranking:}} reranker filters (re-ranks) initial candidates so most relevant chunks will appear first.
     \item {\textbf{Construction of Context:}} selected chunks inserted into prompt with original question.
     \item {\textbf{Answer Generation:}} \ac{LLM} generates answer using question and retrieved context.
     \item {\textbf{Evaluation and Logging:}} system logs timing, quality of retrieval, output-quality metrics for comparison.
@@ -121,7 +121,7 @@ A major trade-off associated with developing a system for performing retrieval i
 
 \subsection{Overview}
 
-\ac{HPC} systems are collections of interconnected computers (usually referred to as nodes) which have been designed to support computationally intensive workloads requiring greater computational power, memory, and/or data storage throughput than can be provided by a single desktop computer. For this project, \ac{HPC} is important because the same \ac{RAG} workflow used locally is deployed in a managed cluster environment where it can be tested under different resource conditions.
+\ac{HPC} systems are collections of interconnected computers (usually referred to as nodes) which have been designed to support computationally intensive workloads requiring greater computational power, memory, and/or data storage throughput than a single desktop computer can provided. For this project, \ac{HPC} is important because the same \ac{RAG} workflow used locally is deployed in a managed cluster environment where it can be tested under different resource conditions.
 
 In contrast to a typical desktop workstation, \ac{HPC} systems do not typically execute the users' requests immediately. Instead, when a user logs into an \ac{HPC} system they will use a login node to create their own directories, prepare their code and job submission scripts and then submit their job to a scheduler (such as Slurm) \cite{slurm2003}. At this point, the scheduler determines what resources (compute nodes, \acp{CPU}, \acp{GPU}, etc.) should be allocated to each submitted job based upon predetermined policies of the system. Although \acp{HPC} are extremely useful for conducting reproducible batch experiments; the process of doing so introduces operational considerations (e.g., queue time, startup overhead associated with submitting a job, accessing storage, creating containers).
 
@@ -133,14 +133,14 @@ The \ac{HPC} system consists of multiple parts:
     \item \textbf{Local workstation:} The user's personal computing device, used to write code, connect to the cluster, transfer files, and review results.
     \item \textbf{Login node:} The gateway into the cluster. This is where files are edited, environments are prepared, and jobs are submitted. Heavy experimental workloads should not be executed on the login node.
     \item \textbf{Scheduler/resource manager:} The component that receives job submissions, queues them, assigns resources, and executes jobs on compute nodes. Slurm is an example of such a scheduler \cite{slurm2003}.
-    \item \textbf{Compute nodes:} The nodes on which the actual workload is executed. Some compute nodes are CPU-only, while others include one or more \acp{GPU} or other accelerators.
+    \item \textbf{Compute nodes:} The nodes on which the actual workload is executed. Some compute nodes are CPU-only, while others include one or more \acp{GPU} or other hardware.
     \item \textbf{Shared storage:} The storage system used for datasets, notebooks, vector indexes, logs, and result files. Shared storage can affect \ac{RAG} workflow performance because document collections and indexes may be read repeatedly.
-    \item \textbf{Software environments:} \ac{HPC} clusters provide mechanisms for reproducing software environments, including module systems, virtual environments, and, in some systems, containers such as Apptainer.
+    \item \textbf{Software environments:} \ac{HPC} clusters provide mechanisms for reproducing software environments, including module systems, virtual environments, and, in some systems, containers such as Apptainer (container platform).
 \end{itemize}
 
 \subsection{Parallelism, Caching, and Batching in RAG Workloads}
 
-The concept of parallelism is largely defined by how many different systems execute simultaneously versus how many models train with simultaneous data (i.e., how many models train simultaneously). Examples of key types of parallelism include independent query parallelism, batch evaluations, parallel document processing and parallel embedding generation. An example would be dividing up a series of test questions among different worker nodes/submitting each question as its own job. Likewise, a large document could be broken into smaller pieces (chunks) and embedded in batches; not piece-by-piece.
+The concept of parallelism is largely defined by how many different systems execute simultaneously versus how many models train simultaneously. Examples of key types of parallelism include independent query parallelism, batch evaluations, parallel document processing and parallel embedding generation. An example would be dividing up a series of test questions among different worker nodes/submitting each question as its own job. Likewise, a large document could be broken into smaller pieces (chunks) and embedded in batches; not piece-by-piece.
 
 Similar to parallelism, caching is critical for \ac{RAG} pipelines to eliminate redundant computation. When using the same documents across a series of experiments it is likely to find that the embeddings and indexes can be reused. Furthermore, evaluating the same query set on numerous occasions, can cache repeated results for debugging purposes or for comparing the performance of similar systems. While caching can significantly increase speed, care must be taken to ensure that all cached and non-cached results are properly accounted for when making comparisons.
 
@@ -148,9 +148,9 @@ In this thesis, these factors are treated as deployment considerations rather th
 
 \subsection{Job Scheduling and Resource Management}
 
-\ac{HPC} Execution is dependent on job scripts that specify how much \acp{HPC} resource each experiment requires (for example, how many nodes, \acp{CPU}, \acp{GPU}, etc., memory, what is the runtime, where does the output go). Then, the Scheduler puts the job into a Queue, and starts the job when there is an opening for Resources.
+\ac{HPC} execution is dependent on job scripts that specify how much \acp{HPC} resource each experiment requires (for example, how many nodes, \acp{CPU}, \acp{GPU}, etc., memory, what is the runtime, where does the output go). Then, the scheduler puts the job into a queue, and starts the job when there is an opening for resources.
 
-Job Scheduling is important for the \ac{HPC} phase of this thesis because it can impact both the performance and reproducibility of the experiments. If measuring end-to-end wall clock time from outside the application, it also captures all of the time spent waiting in line with the scheduler; whereas, application run time measures only the time that the application spends running once started. For this reason, it is important to conceptually separate queue time and service-startup overhead from application-level timing. The timing fields noted in the notebooks indexing time, retrieval time, generation time, and overall runtime, are the main focus of the implementation
+Job scheduling is important for the \ac{HPC} phase of this thesis because it can impact both the performance and reproducibility of the experiments. If measuring end-to-end wall clock time from outside the application, it also captures all of the time spent waiting in line with the scheduler; whereas, application run time measures only the time that the application spends running once started. For this reason, it is important to conceptually separate queue time and service-startup overhead from application-level timing. The timing fields noted in the notebooks indexing time, retrieval time, generation time, and overall runtime, are the main focus of the implementation
 
 \subsection{Containerization}
 
@@ -166,17 +166,17 @@ The most influential factors on performance include:
 
 \begin{itemize}
     \item \textbf{Index Loading/Storage Access:} Indexes and/or collections of documents may have a high cost associated with them when being loaded into memory from shared storage. This can significantly reduce the need to repeatedly pay this overhead by copying data that is accessed frequently to local storage on each node, or by maintaining indexes that remain "warm".
-    \item \textbf{Embedding/Generation Parallelism:} Due to the fact that many operations are independent (document chunking, generating embeddings, etc.), document chunking, embedding generation, and evaluation queries can often be executed in parallel.
+    \item \textbf{Embedding/Generation Parallelism:} Due to the fact that many operations are independent, document chunking, embedding generation, and evaluation queries can often be executed in parallel.
     \item \textbf{Batch Size:} Batching larger quantities of documents can improve the throughput for either generating or retrieving embeddings; however, it may also increase the amount of memory required per batch, which can result in longer wait times before a query will be processed.
     \item \textbf{Caching Policy:} By reusing cached versions of embeddings, indexes, and repeated retrieval results, unnecessary computations can be avoided. If caching is used, it should be documented so that repeated runs are interpreted correctly.
-    \item \textbf{Resource Allocation:} Selecting the correct combination of \ac{CPU}, \ac{GPU}, Memory and Wall-Time Requests for an Experiment will affect how long an experiment runs, where the Scheduling Algorithm places the experiment within the Cluster, and potentially the overall Performance of the Experiment.
+    \item \textbf{Resource Allocation:} Selecting the correct combination of \ac{CPU}, \ac{GPU}, memory and wall-time requests for an experiment will affect how long an experiment runs, where the scheduling algorithm places the experiment within the cluster, and potentially the overall performance of the experiment.
 \end{itemize}
 
 These considerations are directly related to the broad deployment goal of the thesis. The experiments compare retrieval-level methods (dense retrieval, vector database retrieval, hybrid search, reranking), while system-level strategies such as caching, batching, and parallel execution describe how the same workflow is deployed and interpreted on \ac{HPC}.
 
 \section{Evaluation Metrics in Model Deployment}
 
-Evaluating an \ac{RAG} Pipeline requires more than simply measuring how fast it is. An "incredibly" fast system will be completely useless if it retrieves a lot of irrelevant documents or provides no supporting evidence for the generated answers. In order to measure these aspects of the evaluation of an \ac{RAG} system, this thesis uses three categories of metrics: (1) system performance; (2) retrieval quality; (3) answer quality. The first category includes indexing time, retrieval time, and generation time. The second category includes retrieval hit, precision, recall, and F1. Answer quality is evaluated by combining manual correctness scores with \ac{ROUGE-L}, \ac{BERTScore}, sentence embedding semantic similarity and answer length \cite{lin2004rouge,zhang2020bertscore,reimers2019sentencebert}. The classification as well as the categorization of the used evaluation metrics corresponds to the requirement to measure the behaviour of machine learning systems and the quality of their generated language \cite{mlsystemsurvey2021,liang2022helm}. While this thesis did not create an implementation of the \ac{RAGAS} Framework, the evaluation of the thesis follows the same general categorization that was developed by the authors of the \ac{RAGAS} Framework into a separation between retrieval behaviour, generated-answer quality, and execution costs \cite{es2024ragas}.
+Evaluating an \ac{RAG} pipeline requires more than simply measuring how fast it is. An "incredibly" fast system will be completely useless if it retrieves a lot of irrelevant documents or provides no supporting evidence for the generated answers. In order to measure these aspects of the evaluation of an \ac{RAG} system, this thesis uses three categories of metrics: (1) system performance; (2) retrieval quality; (3) answer quality. The first category includes indexing time, retrieval time, and generation time. The second category includes retrieval hit, precision, recall, and F1. Answer quality is evaluated by combining manual correctness scores with \acs{ROUGE-L}, \acs{BERTScore}, sentence embedding semantic similarity and answer length \cite{lin2004rouge,zhang2020bertscore,reimers2019sentencebert}. The classification as well as the categorization of the used evaluation metrics corresponds to the requirement to measure the behaviour of machine learning systems and the quality of their generated language \cite{mlsystemsurvey2021,liang2022helm}. While this thesis did not create an implementation of the \ac{RAGAS} framework, the evaluation of the thesis follows the same general categorization that was developed by the authors of the \ac{RAGAS} framework into a separation between retrieval behaviour, generated-answer quality, and execution costs \cite{es2024ragas}.
 
 \subsection{System Performance Metrics}
 
@@ -210,7 +210,7 @@ The quality metrics of the answers determine how well \ac{LLM}'s generated outpu
     \item {\textbf{Manually-scored}}:\quad An \ac{LLM}'s answer is manually scored (correct=1.0; partially correct = 0.5; incorrect = 0.0) based on the ground-truth answer given for it.
     \item {\textbf{Manually-labeled}}:\quad A category is assigned to each answer: "correct", "partially correct" or "incorrect".
     \item {\textbf{Manually-noted}}:\quad Comments provided based on evidence explain why an answer was deemed "missing information"; "contains incorrect statements"; or "lacks supporting reasoning".
-    \item {\textbf{ROUGE-L F1}}:\quad A lexical-overlap-based score (using \ac{ROUGE-L}) compares the generated answer against the ground-truth answer \cite{lin2004rouge}.
+    \item {\textbf{ROUGE-L F1}}:\quad A lexical-overlap-based score (using \acs{ROUGE-L}) compares the generated answer against the ground-truth answer \cite{lin2004rouge}.
     \item {\textbf{BERTScore F1}}:\quad Semantic-similarity score calculated from contextualized BERT word embeddings \cite{zhang2020bertscore}.
     \item {\textbf{Semantic-similarity using sentence embeddings}}:\quad Cosine-similarity between the generated answer and the ground-truth answer, both represented using sentence embeddings \cite{reimers2019sentencebert}.
     \item {\textbf{Length of answer}}:\quad Number of words in the generated answer - a supportive descriptive metric.
@@ -218,14 +218,9 @@ The quality metrics of the answers determine how well \ac{LLM}'s generated outpu
 
 As such, this assessment uses both manual judgments and deterministic metrics. Although the manual notes may include some discussion about grounded-ness, completeness, relevance, and supported claims that could impact correctness, none of those dimensions are currently being recorded separately as numeric fields in the existing evaluation script.
 
-\subsection{Local versus HPC Comparison Metrics}
-
-When the same \ac{RAG} workflows are executed locally and on \ac{HPC}, the comparison should separate pipeline behaviour from environment-specific behaviour. If the same data, models and parameters are used for retrieval accuracy and answer quality, they should be generally comparable. However, performance metrics can vary due to how resources are allocated (e.g., scheduling, etc.), how quickly data can be retrieved or stored, as well as scheduler overhead, batching and parallelism in the execution of the code.
-
-To ensure a baseline comparison, the following performance data must be captured: execution environment; hardware description; number of workers executing; batch size executed; cache status; index creation time; retrieval time; generation time; and overall runtime. The goal here would be to allow for a direct comparison of the same pipeline run locally and on an HPC system without having to consider differences in the experimental design.
+The Table~\ref{tab:evaluation-metric-groups} illustrates the metric used on this thesis as well as the purpose of each.
 
 \begin{table}[H]
-\label{tab:evaluation-metric-groups}
 \centering
 \small
 \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.27\textwidth}}
@@ -239,7 +234,14 @@ Deployment comparison & Local execution results; \ac{HPC} metadata such as envir
 \bottomrule
 \end{tabularx}
 \caption{Metric groups used in the thesis evaluation framework.}
+\label{tab:evaluation-metric-groups}
 \end{table}
+
+\subsection{Local versus HPC Comparison Metrics}
+
+When the same \ac{RAG} workflows are executed locally and on \ac{HPC}, the comparison should separate pipeline behaviour from environment-specific behaviour. If the same data, models and parameters are used for retrieval accuracy and answer quality, they should be generally comparable. However, performance metrics can vary due to how resources are allocated (e.g., scheduling, etc.), how quickly data can be retrieved or stored, as well as scheduler overhead, batching and parallelism in the execution of the code.
+
+To ensure a baseline comparison, the following performance data must be captured: execution environment; hardware description; number of workers executing; batch size executed; cache status; index creation time; retrieval time; generation time; and overall runtime. The goal here would be to allow for a direct comparison of the same pipeline run locally and on an HPC system without having to consider differences in the experimental design.
 
 \section{Summary}
 

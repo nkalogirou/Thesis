@@ -73,9 +73,9 @@ Some important constraints to bear in mind for this thesis include: firstly, the
 
 Secondly, the evaluation examines five distinct application scenarios. In each scenario, the queries are applied to differing types of search tasks (direct lookup, procedural search, multi-disciplinary reasoning, security policy retrieval, and operational support) and while these do provide a good range of application-based searches, there are insufficient numbers of scenarios to allow for extensive statistical generalisation.
 
-Thirdly, manual scoring employs a simplistic 'correctness' based metric. While this provides complete transparency into how answers have been scored, it is likely that such a method will fail to accurately assess many other aspects of answer quality that could potentially impact on user experience, such as the tone, completeness, confidence etc., of answers provided at the sentence level.
+Thirdly, manual scoring employs a simplistic "correctness" based metric. While this provides complete transparency into how answers have been scored, it is likely that such a method will fail to accurately assess many other aspects of answer quality that could potentially impact on user experience, such as the tone, completeness, confidence etc., of answers provided at the sentence level.
 
-Lastly, both the local- versus \ac{HPC} comparisons are workflow level deployments, as opposed to being pure hardware benchmarks. Both the local and \ac{HPC} workflows employ similar pipeline structures and timing categories. However, the two workflows utilise fundamentally different server-side architectures and some differing back-end model configurations. Hence, whilst the \ac{HPC} timings are indicative of the timing characteristics exhibited by the implemented workflow architecture, they are not independent measures of pure hardware performance.
+Lastly, both the local versus \ac{HPC} comparisons are workflow level deployments, as opposed to being pure hardware benchmarks. In addition, the workflows employ similar pipeline structures and timing categories. However, the two workflows utilise fundamentally different server-side architectures and some differing back-end model configurations. Hence, whilst the \ac{HPC} timings are indicative of the timing characteristics exhibited by the implemented workflow architecture, they are not independent measures of pure hardware performance.
 
 \section{Future Work}
 
@@ -93,7 +93,7 @@ Finally, there are a number of areas that need further investigation regarding a
 
 \section{Final Remarks}
 
-This thesis illustrated that This thesis showed that retrieval-level \ac{RAG} optimisation involves trade-offs between retrieval quality, answer quality, and runtime cost. The experimental results show that stronger retrieval components do not automatically produce the best manual answer quality, and that additional retrieval stages can increase latency even when they improve retrieval coverage.. The experimental data shows that better components for the retrieval process does not directly lead to better quality of manual answers as well as longer times for added retrieval stages will have a negative impact on latency even if they provide greater retrieval coverage.
+This thesis that \acf{RAG} involves trade-offs between retrieval quality, answer quality, and runtime cost. The experimental results show that stronger retrieval components do not automatically produce the best manual answer quality, and that additional retrieval stages can increase latency even when they improve retrieval coverage.
 
 The \ac{HPC} results show that moving the workflow from a local machine to an \ac{HPC} environment can dramatically reduce overall time for a run; particularly for workload heavy on generative processes. Nevertheless, the results also show that each component of the process has its own optimal level of benefit. For example, retrieval-based operations including vector database access or service interactions can experience significant overheads which cannot simply be reduced through use of a larger environment to execute in.
 

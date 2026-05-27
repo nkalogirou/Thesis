@@ -22,7 +22,7 @@ Finally, I would like to thank my family and friends for their encouragement, pa
 \thispagestyle{empty}
 \acp{LLM} are becoming increasingly popular in many different \ac{NLP}-related areas (such as question answering, summarization and information retrieval). However, \ac{LLM} on its own may provide unsupported answers if the required information exists at a remote location or is specific to a particular area of study. \ac{RAG} solves this problem by first finding all relevant parts of a document collection and then making these available to the \ac{LLM} as context prior to generating the final answer. 
 
-This thesis examines how to optimize and deploy \ac{RAG} pipelines through comparative analysis of six controlled pipeline configurations: a) in-memory baseline b) a Milvus vector database pipeline c) a Milvus vector database pipeline with tuning d) dense retrieval with reranking e) hybrid retrieval without reranking f) hybrid retrieval with reranking. For all six of the pipeline configurations described above, we employ the same synthetic enterprise document collection, same set of five scenarios, same log output format and same evaluation procedure. Thus, the only difference among the six pipeline configurations is in their retrieval strategy.
+This thesis examines how to optimize and deploy \ac{RAG} pipelines through comparative analysis of six controlled pipeline configurations: i) in-memory baseline ii) a Milvus vector database pipeline iii) a Milvus vector database pipeline with tuning iv) dense retrieval with reranking v) hybrid retrieval without reranking vi) hybrid retrieval with reranking. For all six of the pipeline configurations described above, there employed the same synthetic enterprise document collection, same set of five scenarios, same log output format and same evaluation procedure. Thus, the only difference among the six pipeline configurations is in their retrieval strategy.
 
 The main comparison uses manual answer score to measure answer correctness and for the retrieval it uses the F1 score to measure how well precision and recall are balanced when the retrieved documents are compared with the expected supporting evidence.
 
@@ -41,42 +41,17 @@ The overall framework that has been created in this thesis is a structured local
 \acro{RAG}{Retrieval-Augmented Generation}
 \acro{HPC}{High-Performance Computing}
 \acro{GPU}{Graphics Processing Unit}
-\acro{TPU}{Tensor Processing Unit}
 \acro{CPU}{Central Processing Unit}
 \acro{LoRA}{Low-Rank Adaptation}
-\acro{PEFT}{Parameter-Efficient Fine-Tuning}
-\acro{SFT}{Supervised Fine-Tuning}
-\acro{ANN}{Approximate Nearest Neighbor}
 \acro{KV}{Key--Value}
-\acro{FFN}{Feed-Forward Network}
 \acro{DPR}{Dense Passage Retrieval}
 \acro{BM25}{Best Matching 25}
-\acro{HNSW}{Hierarchical Navigable Small World}
-\acro{FAISS}{Facebook AI Similarity Search}
-\acro{TP}{Tensor Parallelism}
-\acro{PP}{Pipeline Parallelism}
-\acro{DP}{Data Parallelism}
 \acro{FSDP}{Fully Sharded Data Parallel}
-\acro{NCCL}{NVIDIA Collective Communications Library}
-\acro{MPI}{Message Passing Interface}
-\acro{RDMA}{Remote Direct Memory Access}
 \acro{TGI}{Text Generation Inference}
-\acro{TIS}{Triton Inference Server}
-\acro{API}{Application Programming Interface}
 \acro{MMLU}{Massive Multitask Language Understanding}
 \acro{HELM}{Holistic Evaluation of Language Models}
-\acro{MLPerf}{Machine Learning Performance Benchmark Suite}
-\acro{PFS}{Parallel File System}
 \acro{GPFS}{General Parallel File System}
 \acro{I/O}{Input/Output}
-\acro{TCO}{Total Cost of Ownership}
-\acro{OCI}{Open Container Initiative}
-\acro{SLURM}{Simple Linux Utility for Resource Management}
-\acro{SIF}{Singularity Image Format}
-\acro{LSTM}{Long Short-Term Memory}
-\acro{GRU}{Gated Recurrent Unit}
-\acro{GPT}{Generative Pre-trained Transformer}
-\acro{RNN}{Recurrent Neural Network}
 \acro{RAGAS}{Retrieval Augmented Generation Assessment}
 \acro{ROUGE-L}{Recall-Oriented Understudy for Gisting Evaluation - Longest Common Subsequence}
 \acro{BERTScore}{Bidirectional Encoder Representations from Transformers Score}
@@ -90,8 +65,10 @@ The overall framework that has been created in this thesis is a structured local
 \acro{AWQ}{Activation-aware Weight Quantization}
 \acro{KV-cache}{Key-Value Cache}
 \acro{KILT}{Knowledge Intensive Language Tasks}
-\acro{HPCF}{The Cyprus Institute High Performance Computing Facility}
-\acro{MiniLM}{Minimally Distilled Language Model.}
+\acro{MiniLM}{Minimally Distilled Language Model}
+\acro{QA}{Question Answering}
+\acro{SLA}{Service Level Agreement}
+\acro{Sev-1}{Severity 1)}
 \end{acronym}
 
 \clearpage

@@ -114,7 +114,7 @@ Before using a new run for analysis, the following checks should be completed:
 \section*{Appendix B: Evaluation Rubric and Supporting Evidence Guide}
 \addcontentsline{toc}{section}{Appendix B: Evaluation Rubric and Supporting Evidence Guide}
 
-This appendix records the manual scoring logic used alongside the deterministic evaluation script. The manual assessment was necessary because automatic similarity metrics such as \ac{ROUGE-L}, \ac{BERTScore}, and sentence-embedding similarity can identify overlap with a reference answer, but they do not always determine whether an answer contains the operational detail required by the scenario.
+This appendix records the manual scoring logic used alongside the deterministic evaluation script. The manual assessment was necessary because automatic similarity metrics such as \acs{ROUGE-L}, \acs{BERTScore}, and sentence-embedding similarity can identify overlap with a reference answer, but they do not always determine whether an answer contains the operational detail required by the scenario.
 
 \subsection*{B.1 Manual Answer Score}
 \addcontentsline{toc}{subsection}{B.1 Manual Answer Score}
@@ -154,7 +154,7 @@ Supporting documents are recorded in \texttt{data/ground\_truth/rag\_ground\_tru
 After the manual worksheet is completed, the deterministic evaluation script produces per-row and per-implementation outputs. The key metrics are:
 
 \begin{itemize}
-    \item \textbf{Answer quality}: manual score, \ac{ROUGE-L} F1, \ac{BERTScore} F1, sentence-embedding semantic similarity, and answer length.
+    \item \textbf{Answer quality}: manual score, \acs{ROUGE-L} F1, \acs{BERTScore} F1, sentence-embedding semantic similarity, and answer length.
     \item \textbf{Retrieval quality}: retrieval hit, retrieval precision, retrieval recall, and retrieval F1.
     \item \textbf{Timing}: indexing time, retrieval time, and generation time averaged by implementation.
 \end{itemize}

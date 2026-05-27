@@ -15,7 +15,7 @@ The comparisons were made by using a "local first" process. Each of the notebook
 By focusing on retrieving and ranking, and keeping the generator model consistent across experiments wherever possible, the comparison isolates the effects of changing retrieval components, including dense retrieval, persistent vector storage, tuned chunking, reranking, sparse-dense hybrid retrieval and hybrid retrieval with reranking.
 
 \section{Dataset and Input Documents}
-The experiments use the OrchestrAI synthetic enterprise dataset developed specifically for this project in a local project directory. This dataset includes 54 \texttt{.docx} files, which are located within ten different departmental folders (Customer Support, Engineering, Finance, Human Resources/HR, Information Technology /IT, Logistics, Product, Sales, Security and Q\&A Handbooks). In total the documents contain company policy and descriptions of policies; customer service procedures; on-boarding work flow; procurement processes; product development descriptions; as well as cross functional operational descriptions.
+The experiments use the OrchestrAI synthetic enterprise dataset developed specifically for this thesis in a local project directory. This dataset includes 54 \texttt{.docx} files, which are located within ten different departmental folders (Customer Support, Engineering, Finance, Human Resources/HR, Information Technology /IT, Logistics, Product, Sales, Security and Q\&A Handbooks). In total the documents contain company policy and descriptions of policies; customer service procedures; on-boarding work flow; procurement processes; product development descriptions; as well as cross functional operational descriptions.
 
 Each notebook uses the Haystack \texttt{DOCXTo\allowbreak Document} converter to load the same document set recursively. While documents are loaded, they are enriched with additional metadata – primarily the original source filename and department. This metadata is used in manually evaluating retrieved documents when the retrieved documents are saved to the \texttt{results.csv} for later comparison purposes. 
 
@@ -50,29 +50,6 @@ This structure supports fair comparison because all notebooks use the same high-
 
 \section{Implemented RAG Pipelines}
 
-\begin{table}[htbp]
-\centering
-{\footnotesize X indicates that the component or configuration is part of the pipeline variant.\par}
-\vspace{0.5em}
-\scriptsize
-\begin{tabularx}
-{\textwidth}{>{\raggedright\arraybackslash}p{0.16\textwidth}*{8}{>{\centering\arraybackslash}X}}
-\toprule
-\textbf{Pipeline} & \textbf{In-memory docs} & \textbf{Vector DB} & \textbf{Dense retrieval} & \textbf{Sparse / BM25} & \textbf{Reranker} & \textbf{Tuned chunks} & \textbf{LLM generation} & \textbf{CSV logging} \\
-\midrule
-\texttt{basic} & X & - & X & - & - & - & X & X \\
-\texttt{vectordb} & - & X & X & - & - & - & X & X \\
-\texttt{vectordb\_\allowbreak tuned} & - & X & X & - & - & X & X & X \\
-\texttt{reranker} & - & X & X & - & X & - & X & X \\
-\texttt{hybrid} & - & X & X & X & - & - & X & X \\
-\texttt{hybrid\_\allowbreak rerank} & - & X & X & X & X & - & X & X \\
-\bottomrule
-\end{tabularx}
-\vspace{0.5em}
-\caption{Implemented RAG pipeline variants and included components.}
-\label{tab:six-rag-pipeline-variants}
-\end{table}
-
 \subsection{Baseline RAG version}
 The baseline in-memory RAG version, \texttt{rag\_basic.ipynb}, utilizes an in-memory document store and an embedding-based retriever. The goal of this pipeline was to provide the simplest completely working \ac{RAG} model and serve as a reference point for the other versions. It demonstrated how retrieval and generation work when there is no added overhead of a vector database, sparse retrieval, or reranking.
 
@@ -95,6 +72,30 @@ The hybrid version, \texttt{rag\_hybrid.ipynb}, used a hybrid retrieval mechanis
 \subsection{Hybrid Retrieval With Reranking RAG}
 
 The hybrid-reranking version, \texttt{rag\_hybrid\_\&\_rerank.ipynb}, built upon the hybrid retrieval version. First, it retrieves 20 hybrid candidates. Next, it uses the cross-encoder reranker to select the top 10 documents for generation. This version may improve context ordering by combining dense retrieval, sparse lexical matching, and reranking, but it also increases retrieval cost: the time needed to perform the retrieval will increase since both hybrid candidate retrieval and reranking occur prior to the actual generation of answers.
+
+Table~\ref{tab:six-rag-pipeline-variants} summarizes the six implemented RAG pipeline variants and the components included in each configuration. The comparison highlights how the pipelines differ in terms of document storage, retrieval strategy, chunking configuration, reranking, generation, and logging.
+\begin{table}[htbp]
+\centering
+{\footnotesize X indicates that the component or configuration is part of the pipeline variant.\par}
+\vspace{0.5em}
+\scriptsize
+\begin{tabularx}
+{\textwidth}{>{\raggedright\arraybackslash}p{0.16\textwidth}*{8}{>{\centering\arraybackslash}X}}
+\toprule
+\textbf{Pipeline} & \textbf{In-memory docs} & \textbf{Vector DB} & \textbf{Dense retrieval} & \textbf{Sparse / BM25} & \textbf{Reranker} & \textbf{Tuned chunks} & \textbf{LLM generation} & \textbf{CSV logging} \\
+\midrule
+\texttt{basic} & X & - & X & - & - & - & X & X \\
+\texttt{vectordb} & - & X & X & - & - & - & X & X \\
+\texttt{vectordb\_\allowbreak tuned} & - & X & X & - & - & X & X & X \\
+\texttt{reranker} & - & X & X & - & X & - & X & X \\
+\texttt{hybrid} & - & X & X & X & - & - & X & X \\
+\texttt{hybrid\_\allowbreak rerank} & - & X & X & X & X & - & X & X \\
+\bottomrule
+\end{tabularx}
+\vspace{0.5em}
+\caption{Implemented RAG pipeline variants and included components.}
+\label{tab:six-rag-pipeline-variants}
+\end{table}
 
 \subsection{Measured Variables}
 
@@ -127,13 +128,13 @@ There are no new quality metrics introduced by \ac{HPC} evaluation. Instead, we 
 
 \subsection{Retrieval Quality Metrics}
 
-Retrieval quality is evaluated through comparison of the automatically retrieved source documents to the manual selection of supporting documents within the ground truth CSV. The proportion of manually selected supporting documents (out of all) that are retrieved is referred to as "recall". The ratio of manually selected supporting documents (out of all) to the total number of documents retrieved represents "precision." The retrieval F1 score is an average of both precision and recall. For each evaluation, we will be recording a "retrieval hit" if there exists at least one manually selected supporting document included in the automatically retrieved set.
+Retrieval quality is evaluated through comparison of the automatically retrieved source documents to the manual selection of supporting documents within the ground truth CSV. The proportion of manually selected supporting documents (out of all) that are retrieved is referred to as "recall". The ratio of manually selected supporting documents (out of all) to the total number of documents retrieved represents "precision". The retrieval F1 score is an average of both precision and recall. For each evaluation, we will be recording a "retrieval hit" if there exists at least one manually selected supporting document included in the automatically retrieved set.
 
 \subsection{Answer Quality Metrics}
 
 Manual evaluations assess the quality of the answer by providing a score to determine if the response was completely accurate, partially accurate, or completely inaccurate. Manual scoring assigns 1.0 for a fully correct answer, 0.5 for a partially correct answer, and 0.0 for an incorrect answer. 
 
-The deterministic evaluation script computes additional automatically computed metrics. \ac{ROUGE-L} is a metric for measuring lexical overlap in addition to semantic similarity between the generated response and the reference response. \ac{BERTScore} is another metric that utilizes contextual embeddings to compute semantic similarities in addition to lexical overlap between the two responses. Similarly, a sentence transformer can measure the level of semantic similarity between individual sentences within each answer. Additionally, there are metrics related to the retrieval quality of the model such as whether enough supporting documents were retrieved. Lastly, the script will compute the average number of words in each generated answer.
+The deterministic evaluation script computes additional automatically computed metrics. \acs{ROUGE-L} is a metric for measuring lexical overlap in addition to semantic similarity between the generated response and the reference response. \acs{BERTScore} is another metric that utilizes contextual embeddings to compute semantic similarities in addition to lexical overlap between the two responses. Similarly, a sentence transformer can measure the level of semantic similarity between individual sentences within each answer. Additionally, there are metrics related to the retrieval quality of the model such as whether enough supporting documents were retrieved. Lastly, the script will compute the average number of words in each generated answer.
 
 \subsection{Visual Analysis}
 
@@ -143,11 +144,7 @@ Visualizations are produced via a visualization notebook that is specifically de
 
 The local experiments are run with the notebook workflow with Ollama-based model serving and a local Milvus instance where needed. The \ac{HPC} experiments are run on the Cyclone \ac{HPC} \cite{cyi_cyclone} facility using Slurm-managed jobs and \ac{vLLM}-based model serving. Per the available info, Cyclone has CPU-only nodes and GPU-accelerated nodes, which have: \(2\times\) 20-core Intel Xeon Gold 6248 CPUs, \(4\times\) NVIDIA V100 accelerators, and 192 GB of memory per node.
 
-The implemented \ac{HPC} workflow launches the model-serving components as separate Slurm jobs. \ac{LLM} generation service, embedding service, and reranking service each request one GPU and ten CPU cores. The \ac{LLM} service is \texttt{meta-llama/Llama-3.1-8B-Instruct}, the embedding service uses \texttt{BAAI/bge-m3} and the reranking service is \texttt{BAAI/bge-reranker-base}. These services expose connection information through environment files and are leveraged by the \ac{HPC} notebooks.
-
-Although the six pipeline structures and timing variants are the same for the local and \ac{HPC} experiments, they are not identical model-serving deployments. The local workflow leverages the embedding with \texttt{mxbai-embed-large} and a local \ac{MiniLM} reranker. As such, the cross-environment comparison is more of a comparison of “workflow” level deployments and not an isolated hardware only benchmark.
-
-The cross-environment comparison was for comparing application level timing behaviour, rather than attempting to evaluate any new retrieval logic, so the \ac{HPC} results are interpreted in the exact same way as the local results: indexing time, retrieval time, generation time, and total runtime.
+The implemented \ac{HPC} workflow launches the model-serving components as separate Slurm jobs.
 
 \section{Reproducibility and Documentation}
 

@@ -27,7 +27,7 @@ All notebooks followed a similar general process of execution. That process incl
 
 \subsection{Models and Services}
 
-The local process utilizes Ollama for model serving. The local generative model utilized is \texttt{llama3.1:8b} and the local embeddings model utilized is \texttt{mxbai-embed-large}. Both of these models are open-source and may be downloaded via Ollama or model repository sources (e.g., Hugging Face) subject to download restrictions on each model. Each notebook that runs reranked vectors locally utilizing \ac{MiniLM} cross encoder (sentence-transformers).
+The local process utilizes Ollama for model serving. The local generative model utilized is \texttt{llama3.1:8b} and the local embeddings model utilized is \texttt{mxbai-embed-large}. Both of these models are open-source and may be downloaded via Ollama or model repository sources (e.g., Hugging Face) subject to download restrictions on each model. Each notebook that runs reranked vectors locally utilizing \acs{MiniLM} cross encoder (sentence-transformers).
 
 Each of the vector-database, reranking, hybrid, tuned-vector-database, and hybrid-reranking notebooks run prior to launch of Milvus, utilize the standalone script \textit{embed.sh} (project script) to initiate the Milvus service. The in-memory baseline is simple to implement, requires no Milvus services to begin with; hence it serves as the simplest baseline implementation.
 
@@ -73,11 +73,11 @@ This order represents increasing pipeline complexity, starting with the in-memor
 
 The \ac{HPC} execution stage involves the same pipeline sequence and scenario questions as for the local execution stage, with the difference being that model serving is done via \ac{vLLM}, with generation, embedding, reranking services, and that execution is through Slurm-managed jobs.
 
-The \ac{HPC} experiments were run on the Cyclone \ac{HPC} facility, which has GPU nodes with: \(2\times\) 20-core Intel Xeon Gold 6248 CPUs, \(4\times\) NVIDIA V100 accelerators, and 192GB of memory per node. The service launch scripts submit separate Slurm jobs for the generation model, the embedding model, and the reranking model. Each service job requests one node, one GPU, one task per node, and ten CPU cores.
+The \ac{HPC} experiments were run on the Cyclone \ac{HPC} facility. The service launch scripts submit separate Slurm jobs for the generation model, the embedding model, and the reranking model. Each service job requests 1--node, 1--GPU, 1--task-per-node, and 10--CPU cores.
 
 The \ac{vLLM} generation service uses \texttt{meta-llama/Llama-3.1-8B-Instruct}; the embedding service uses \texttt{BAAI/bge-m3}; the reranking service uses \texttt{BAAI/bge-reranker-base}. Each service then writes its host, port, URL, API key, and model name into an environment file under \texttt{/nvme/scratch/\$\{USER\}}. Finally, these environment files are used by the \ac{HPC} notebooks to connect to the right model-serving endpoints.
 
-The purpose of this stage is to compare application-level timing behaviour across environments. Queue time, service startup time, and data-transfer time are deployment issues worth considering, but we won’t treat them as separate measured variables in this thesis. We’ll be focusing on timing comparisons of indexing time, retrieval time, generation time, and total runtime.
+The purpose of this stage is to compare application-level timing behaviour across environments. Queue time, service startup time, and data-transfer time are deployment issues worth considering, but they won’t be treated as separate measured variables in this thesis. The focus is on timing comparisons of indexing time, retrieval time, generation time, and total runtime.
 
 \section{Experiment Scenarios}
 
@@ -89,34 +89,38 @@ The selection of five scenarios provides a focused but diverse comparison set ra
 The five scenario questions are:
 
 \begin{enumerate}
-    \item \textbf{\textit{What is the first-response SLA for a Sev-1 support incident?}} This is the clean baseline scenario. It checks whether the system can retrieve and answer a single operational fact accurately.
+    \item \textbf{\textit{What is the first-response SLA for a Sev-1 support incident?}}\newline This is the clean baseline scenario. It checks whether the system can retrieve and answer a single operational fact accurately.
         \begin{itemize}
             \item Retrieval type: single-document
             \item Main test: exact fact retrieval
         \end{itemize}
-    \item \textbf{\textit{What steps must be completed before a new employee is considered ready for day one at OrchestrAI?}} This scenario is the broadest scenario because it requires the system to connect support, product, logistics, and commercial-risk information into one operational response.
+    \item \textbf{\textit{What steps must be completed before a new employee is considered ready for day one at OrchestrAI?}}\newline
+    This scenario is the broadest scenario because it requires the system to connect support, product, logistics, and commercial-risk information into one operational response.
         \begin{itemize}
             \item Retrieval type: checklist or procedure retrieval
             \item Main test: whether the system can recover and summarize a structured process
         \end{itemize}
-     \item \textbf{\textit{A new engineer starts on Monday, but their laptop has not arrived and their required access is still pending. Which teams are involved and what should happen next?}} This scenario requires combining information from more than one team to answer a realistic workplace problem.
+     \item \textbf{\textit{A new engineer starts on Monday, but their laptop has not arrived and their required access is still pending. Which teams are involved and what should happen next?}}\newline
+     This scenario requires combining information from more than one team to answer a realistic workplace problem.
         \begin{itemize}
             \item Retrieval type: multi-document, cross-team retrieval
             \item Main test: whether the system can synthesize HR, IT, and access-related responsibilities
         \end{itemize}
-     \item \textbf{\textit{Can OrchestrAI make an urgent hardware purchase without following the normal PO workflow if a warehouse outage is at risk?}} This is the most demanding scenario in the notebook because it requires cross-functional reasoning across several business areas.
+     \item \textbf{\textit{Can OrchestrAI make an urgent hardware purchase without following the normal PO workflow if a warehouse outage is at risk?}}\newline
+     This is the most demanding scenario in the notebook because it requires cross-functional reasoning across several business areas.
         \begin{itemize}
             \item Retrieval type: policy retrieval with exception logic
             \item Main test: whether the system can identify when a standard workflow may be bypassed
         \end{itemize}
-     \item \textbf{\textit{A customer renewal is at risk because support cases are recurring, a requested feature is still unavailable, and replacement hardware is delayed. What should OrchestrAI do next, and which teams must be involved?}} This scenario is slightly more complex because the answer is not a single fact but a short operational process.
+     \item \textbf{\textit{A customer renewal is at risk because support cases are recurring, a requested feature is still unavailable, and replacement hardware is delayed. What should OrchestrAI do next, and which teams must be involved?}}\newline
+     This scenario is slightly more complex because the answer is not a single fact but a short operational process.
         \begin{itemize}
             \item Retrieval type: multi-hop, multi-document retrieval
             \item Main test: whether the system can combine support, product, logistics, and commercial risk signals into one grounded answer
         \end{itemize}
 \end{enumerate}
 
-The same questions are used for all implementations. Each implementation uses its own scenario identifier prefix so that rows remain easy to distinguish in the results file. For example, the baseline uses \texttt{b1}--\texttt{b5}, the vector-database run uses \texttt{v1}--\texttt{v5}, and the hybrid-reranking run uses \texttt{hr1}--\texttt{hr5}.
+The same questions are used for all implementations. Each implementation uses its own scenario identifier prefix so that rows remain easy to distinguish in the results file. For example, the baseline uses \texttt{b1}--\texttt{b5}, the vector-database run uses \texttt{v1}--\texttt{v5}, the hybrid-reranking run uses \texttt{hr1}--\texttt{hr5} etc.
 
 \subsection{Baseline RAG Experiment}
 
@@ -126,7 +130,7 @@ In this baseline experiment, the five scenarios are executed with the in-memory 
 
 This experiment executes the same five scenarios, but now on a persistent vector database (Milvus). For each of the five questions, the system searches for the top 10 dense match candidates. This experiment examines the impact of persistently storing vectors in a database and whether the quality of the retrieved matches stays similar to those produced by the baseline experiment.
 
-\subsection{Tuned - Vector Database RAG Experiment}
+\subsection{Tuned Vector--Database RAG Experiment}
 
 The following experiments execute the same five scenarios by running the Milvus vector-database pipeline at a larger chunk size with higher overlaps. Chunk size will impact how much context is included for each retrievable unit. To remove any other influences from the chunk-size on the retrievals (i.e., to simply determine the effect of the chunk-size), all else constant are kept; that is, the retriever, model, prompt and top-k values are identical to those used within the vector-database configuration. Thus, these experiments are referred as the "tuned" variant of the vector-database experiments.
 
@@ -150,7 +154,7 @@ In the last local vs HPC comparison of timing, these columns will be utilized to
 
 \section{Data Validation}
 
-The recorded output is validated as complete prior to analysis. The validation entails verification that there are five rows in each of the implementations, that the generated answers were not null, that there were sources that were retrieved, and that the time fields were available. Additionally, all retrieved contexts are manually examined when developing the truth table (ground-truth sheet), since the quality score of the answer cannot be assumed; it must have some form of evidence based upon a subset of the data within the corpus.
+The recorded output is validated as complete prior to analysis. The validation requires verification that there are five rows in each of the implementations, that the generated answers were not null, that there were sources that were retrieved, and that the time fields were available. Additionally, all retrieved contexts are manually examined when developing the truth table (ground-truth sheet), since the quality score of the answer cannot be assumed; it must have some form of evidence based upon a subset of the data within the corpus.
 
 For the \ac{HPC} experiments, validation focuses on whether the same six pipeline variants and five scenarios are present in the timing outputs and whether the timing fields required for local versus \ac{HPC} comparison are available.
 
@@ -158,4 +162,4 @@ For the \ac{HPC} experiments, validation focuses on whether the same six pipelin
 
 This chapter outlined how the experimental setup and implementation were carried out for all of the six developed \ac{RAG} pipelines. It also discussed the environment where the software was executed, the model-serving setup used to deploy models, the input corpus, the parameters that were set during execution, the sequence in which notebooks are run, the phases of deploying an application, the types of question asked by each scenario, how data was collected from each experiment, and what steps were taken to validate the results of experiments conducted with this pipeline.
 
-In particular, the local phase is compared to provide a point-of-reference for comparing retrieval methods and the \ac{HPC} phase uses the same structure and scenarios in a Cyclone cluster environment (using \ac{vLLM}-based services) to apply the same pipeline structures. Therefore, since both environments utilize different model-serving back-ends and some different back-end models, when comparisons are made across environments they should be viewed as a comparison of workflow execution times versus strictly as a hardware comparison. Data generated in this way is then analyzed in chapter ~6
+Since both environments utilize different model-serving back-ends and some different back-end models, when comparisons are made across environments they should be viewed as a comparison of workflow execution times rather than a hardware comparison. Data generated in this way is then analyzed in chapter ~6
