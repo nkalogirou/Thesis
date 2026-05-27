@@ -100,18 +100,7 @@ python -m pip install -r requirements.txt
 | Notebooks | `notebooks/` | `notebooks-hpc/` |
 | LLM / embeddings | Ollama | vLLM via `rag-training2025-main/vllm/` |
 | Results CSV | `data/results/experimental/rag_results.csv` | `data/results/experimental/hpc_results.csv` |
-| Guide | This file (sections below) | [`READHPC.md`](READHPC.md) |
 
-### Secrets (HPC only)
-
-Never commit API keys or tokens. On the cluster:
-
-```bash
-cd ~/Thesis
-cp .env.example .env
-chmod 600 .env
-# set HF_TOKEN=hf_... in .env
-```
 
 `llm_launcher.sh` reads `~/Thesis/.env` when you `sbatch` jobs. Jupyter tunnel details are written to `scripts/connection_info.txt` (also gitignored).
 
