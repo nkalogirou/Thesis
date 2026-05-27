@@ -148,7 +148,7 @@ In this thesis, these factors are treated as deployment considerations rather th
 
 \subsection{Job Scheduling and Resource Management}
 
-\ac{HPC} Execution is dependent on job scripts that specify how much \acp{HPC} resource each experiment requires (for example, how many nodes, \acp{CPU}, \acp{GPU}, etc., memory, what is the run-time, where does the output go). Then, the Scheduler puts the job into a Queue, and starts the job when there is an opening for Resources.
+\ac{HPC} Execution is dependent on job scripts that specify how much \acp{HPC} resource each experiment requires (for example, how many nodes, \acp{CPU}, \acp{GPU}, etc., memory, what is the runtime, where does the output go). Then, the Scheduler puts the job into a Queue, and starts the job when there is an opening for Resources.
 
 Job Scheduling is important for the \ac{HPC} phase of this thesis because it can impact both the performance and reproducibility of the experiments. If measuring end-to-end wall clock time from outside the application, it also captures all of the time spent waiting in line with the scheduler; whereas, application run time measures only the time that the application spends running once started. For this reason, it is important to conceptually separate queue time and service-startup overhead from application-level timing. The timing fields noted in the notebooks indexing time, retrieval time, generation time, and overall runtime, are the main focus of the implementation
 

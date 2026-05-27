@@ -56,7 +56,7 @@ To accomplish the objectives outlined in this thesis, the following five objecti
 
 \section{Research Questions and Hypotheses}
 
-The research questions are designed to remain within the experimental scope of the thesis. They focus on two measurable areas: the accuracy and answer quality of retrieval-level techniques, and the performance impact of system-level strategies. The local experiments provide the first set of measurements, while the later \ac{HPC} experiments repeat the same workflow to evaluate portability and deployment behaviour.
+The research questions are designed to remain within the experimental scope of the thesis. They focus on two measurable areas: the accuracy and answer quality of retrieval-level techniques, and the timing behaviour of the implemented workflows. The local experiments provide the first set of measurements, while the later \ac{HPC} experiments repeat the same workflow to evaluate portability and deployment behaviour.
 
 \begin{itemize}
     \item {\bfseries RQ1:} 
@@ -77,7 +77,7 @@ The research questions are designed to remain within the experimental scope of t
     \item {\bfseries RQ4: }
     \textbf{How does the same \ac{RAG} workflow behave when moved from local deployment to \ac{HPC} deployment?}\newline
     {\bfseries H4: } 
-    When utilizing the exact same files, scenarios, models, and logging formats, there should be minimal differences in query retrieval and response-quality between Local execution and \acf{HPC} as long as they utilize the same resources. The main areas where differences can be seen will be in terms of Performance and Operationally. \ac{HPC} is expected to see a boost in throughput and batched execution through the use of parallelism and batching; however, single-query latency may not consistently have benefits due to scheduling-delays, container startup-times, shared storage access times, data transfer overhead, etc., that will likely offset the added compute power available.
+    The major differences are expected to occur with respect to timing behaviour when using the same six \ac{RAG} pipeline structures and the same five scenarios on both local and \ac{HPC} systems. On an \ac{HPC} system, it is expected that the overall time of a computation will be reduced significantly compared to a local environment; particularly where computations rely heavily upon data generation. However, there is no reason why all retrieval times would need to show improvement since vector database access, storage behaviour and service interactions can create overhead for short retrieval operations.
 \end{itemize}
 
 These hypotheses are deliberately comparative and quantifiable. 
