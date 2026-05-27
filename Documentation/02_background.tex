@@ -18,14 +18,16 @@ This research focuses on utilizing an \ac{LLM} as part of a \ac{RAG} system. The
 
 \subsection{Transformer Architecture}
 
-\begin{figure}[t]
+Modern \acp{LLM} are built upon the Transformer architecture introduced by Vaswani \emph{et al.} \cite{vaswani2017attention}. The transformer architecture may be viewed as a sequential processing model, where a sequence of tokens is read into the model, and the representation of each token is iteratively updated based on the representations of the surrounding tokens. This is significantly different from earlier recurrent models that were primarily sequential in their operation, and therefore lacked much inherent or explicit parallelism.   
+
+The Diagram~\ref{fig:transformer-architecture} shows the main building blocks used to transform input tokens into contextual representations and generated output tokens.
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{images/Transformer,_full_architecture.png}
-    \caption[Transformer encoder--decoder architecture]{Transformer encoder-decoder architecture. The diagram shows the main building blocks used to transform input tokens into contextual representations and generated output tokens. \cite{vaswani2017attention}}
+    \caption[Transformer encoder--decoder architecture]{Transformer encoder-decoder architecture\cite{vaswani2017attention}.}
     \label{fig:transformer-architecture}
 \end{figure}
-
-Modern \acp{LLM} are built upon the Transformer architecture introduced by Vaswani \emph{et al.} \cite{vaswani2017attention}. The transformer architecture may be viewed as a sequential processing model, where a sequence of tokens is read into the model, and the representation of each token is iteratively updated based on the representations of the surrounding tokens. This is significantly different from earlier recurrent models that were primarily sequential in their operation, and therefore lacked much inherent or explicit parallelism.   
 
 The most important idea in the Transformer is \emph{self-attention}. In simple terms, self-attention is the mechanism that helps the model decide which words in the input are important for understanding each other. For example, in the sentence ``the server restarted because it ran out of memory'', the word ``it'' should be linked more strongly to ``server'' than to unrelated words. Self-attention allows the model to make these links automatically. Each token is compared with the other tokens in the sequence, and the model gives higher weight to tokens that provide useful context.
 
@@ -37,22 +39,25 @@ where $d_k$ is the dimensionality of the key vectors. The softmax operation conv
 
 The Transformer extends self-attention through \emph{multi-head attention}. Instead of applying attention only once, the model uses several attention heads in parallel. One head may focus on grammatical structure, another may focus on entity relationships, and another may focus on long-distance dependencies. The outputs of the heads are then combined. This gives the model a richer representation of the input than a single attention calculation would provide.
 
+The Figure~\ref{fig:multihead-attention} shows a Multi-head attention mechanism illustrating the linear projections of queries, keys, and values, followed by parallel attention heads and concatenation.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\linewidth]{images/Multi-head_attention.png}
-    \caption{Multi-head attention mechanism, illustrating the linear projections of queries, keys, and values, followed by parallel attention heads and concatenation. Adapted from Alammar~\cite{alammar2018transformer}.}
+    \caption{Multi-head attention mechanism ~\cite{alammar2018transformer}.}
     \label{fig:multihead-attention}
 \end{figure}
 
 The most important aspect of how the Transformer affects the way it behaves during runtime, is through its influence on generation. Typically, when using a model to generate something (such as an answer), the generation process is sequentially. That means that the model will produce one item at a time. Therefore, long prompts, large amounts of data that have been retrieved, and/or multiple questions asked could potentially slow down the overall generation process. So, the \ac{RAG} evaluation should consider, whether the generated answer was accurate, as well as the time taken to generate the answer, the time taken to retrieve the relevant information used by the model to generate the answer, and the total amount of time from start to finish (end-to-end).
 
-\subsection{Development Paradigms and Their Effect on LLM Performance}
-\label{subsec:llm_paradigms}
+\subsection{Development paradigms and their effect on LLM performance}
 
 There are a variety of methods to create \acp{LLM}-based applications. Each application development method may influence the behaviour of the model as well as that of the surrounding system. Prompting methods change the model input without changing model weights \cite{liu2023pretrain}, while parameter-efficient methods such as \ac{LoRA} and adapter-based transfer learning update or add trainable parameters to adapt the model \cite{hu2022lora,pfeiffer2021adapterfusion}. This distinction is especially relevant to this thesis because the experiments were designed without optimizing model size; updating the model's weight values; fine-tuning the model; quantization of the model nor pruning the model. Rather, this thesis focuses upon retrieving-level design choices made during \ac{RAG} workflow construction, as well as comparing the performance of those \ac{RAG} workflows within both local computing environments and \ac{HPC} environments.
 
-\begin{table}[htpb]
-\label{tab:llm-development-paradigms}
+This distinction is important because retrieval-level techniques improve the information supplied to the model, while model-level techniques modify the model itself. The scope of this thesis requires distinguishing the difference between prompting, \ac{RAG}, fine-tuning, and training from scratch, but the implementation work focuses on deployable \ac{RAG} pipelines and their performance in local and \ac{HPC} environments.
+
+Table~\ref{tab:llm-development-paradigms} provides an overview of the main LLM development paradigms and shows how each one relates to the scope of this thesis.
+
+\begin{table}[htbp]
 \centering
 \small
 \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.22\textwidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.25\textwidth}}
@@ -66,10 +71,8 @@ Training from scratch & Learns all model parameters from large datasets. It prov
 \bottomrule
 \end{tabularx}
 \caption{LLM development paradigms and their relevance to this thesis.}
+\label{tab:llm-development-paradigms}
 \end{table}
-
-This distinction is important because retrieval-level techniques improve the information supplied to the model, while model-level techniques modify the model itself. The scope of this thesis requires distinguishing the difference between prompting, \ac{RAG}, fine-tuning, and training from scratch, but the implementation work focuses on deployable \ac{RAG} pipelines and their performance in local and \ac{HPC} environments.
-
 
 \section{Retrieval-Augmented Generation (RAG)}
 
