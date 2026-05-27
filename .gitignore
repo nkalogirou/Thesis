@@ -3,31 +3,57 @@
 venv/
 env/
 
-# Python cache
+# Python cache and tooling state
 __pycache__/
 *.py[cod]
 *$py.class
-
-# Jupyter
-.ipynb_checkpoints/
+.cache/
+.ipython/
 .jupyter/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
-# OS files
+# Jupyter local state
+.ipynb_checkpoints/
+
+# OS/editor files
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
 
-# Environment / secrets
+# Environment, secrets, and generated connection files
 .env
 .env.*
+!.env.example
 scripts/connection_info.txt
 *.key
 *.pem
 
-# Logs
+# Logs and scheduler output
 *.log
+*.out
+*.err
 logs/
 
-# Milvus runtime data
+# LaTeX build products
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.nav
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.xdv
+
+# Local runtime service data
 volumes/
 
 # Temporary files
@@ -40,10 +66,13 @@ dist/
 *.egg-info/
 
 # Generated experiment outputs during development
-/data/results/experimental/*.csv
+/data/results/experimental/
+/notebooks-hpc/data/results/experimental/
+/data/results/figures/temp/
 
 # Root-level generated outputs, if accidentally created
 /rag_results.csv
+/hpc_results.csv
 /deterministic_eval_results.csv
 /deterministic_eval_summary.csv
 
@@ -52,8 +81,8 @@ dist/
 *.tar
 *.tar.gz
 
-#review comments
+# Personal/local review comments
 reviews/
 
-#cyclone README
+# Local Cyclone notes generated outside the submission docs
 hpc-logs/README_training.md
