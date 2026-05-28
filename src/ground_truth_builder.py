@@ -1,3 +1,10 @@
+"""Build a manual ground-truth template from the generated results CSV.
+
+Copies the identifying columns and generated answers from the results file into
+a new CSV with empty columns (``ground_truth_answer``, ``manual_score`` ...) that
+are filled in by hand during evaluation.
+"""
+
 from __future__ import annotations
 
 import csv

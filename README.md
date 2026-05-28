@@ -22,12 +22,10 @@ This repository contains multiple Retrieval-Augmented Generation implementations
 │   ├── rag_reranker.ipynb
 │   ├── rag_hybrid.ipynb
 │   ├── rag_hybrid_&_rerank.ipynb
-│   ├── rag_visualizations.ipynb
-│   ├── results_logger.py               Notebook-local helpers (mirrors src/)
-│   ├── ground_truth_builder.py
-│   └── deterministic_eval.py
+│   └── results_logger.py               Copy of src/results_logger.py for HPC imports
 │
-├── rag-training2025-main/
+├── hpc-logs/                           HPC (Cyclone) setup notes and launchers
+│   ├── READHPC.md                      HPC login, secrets, vLLM, Jupyter, notebooks
 │   └── vllm/                           Slurm launchers for LLM, embedder, reranker
 │       ├── serve_models.sh             Submit all vLLM services
 │       ├── llm_launcher.sh
@@ -41,8 +39,7 @@ This repository contains multiple Retrieval-Augmented Generation implementations
 │
 ├── scripts/
 │   ├── standalone_embed.sh             Milvus start/stop/restart script
-│   ├── launch_jupyter.sh               Slurm Jupyter job + tunnel instructions
-│   └── compare_timing_local_hpc.py     Local vs HPC timing plots and summaries
+│   └── launch_jupyter.sh               Slurm Jupyter job + tunnel instructions
 │
 ├── config/
 │   ├── embedEtcd.yaml                  Milvus etcd configuration
@@ -56,11 +53,12 @@ This repository contains multiple Retrieval-Augmented Generation implementations
 │       ├── experimental/               Generated CSVs during runs (gitignored)
 │       ├── final/                      Curated results for submission
 │       ├── local_vs_hpc/               Timing comparison charts and summaries
-│       └── figures/                    Exported charts from visualization notebooks
+│       ├── rag_mean_comparison_outputs/  Aggregated mean-comparison outputs
+│       └── figures/                    Exported charts (temp/, results/, summary/)
 │
-├── Documentation/                      LaTeX thesis source and compiled PDF
+├── nk231063_thesis/                    LaTeX thesis source and compiled PDF
 │   ├── _main.tex                       Main LaTeX entry point
-│   ├── _main.pdf                       Compiled thesis PDF
+│   ├── nk231063_thesis.pdf             Compiled thesis PDF
 │   ├── ADG.sty                         Thesis style/package configuration
 │   ├── references.bib                  Bibliography entries
 │   ├── 0_covers.tex                    Cover pages
@@ -77,8 +75,6 @@ This repository contains multiple Retrieval-Augmented Generation implementations
 │   └── images/                         Thesis figures and diagrams
 │
 ├── volumes/                            Milvus runtime data, ignored by Git
-├── READHPC.md                          HPC login, secrets, vLLM, Jupyter, notebooks
-├── .env.example                        Template for gitignored ~/Thesis/.env (HPC only)
 ├── requirements.txt                    Python dependencies
 ├── .gitignore
 └── README.md
@@ -98,7 +94,7 @@ python -m pip install -r requirements.txt
 | | Local | HPC (Cyclone) |
 |---|--------|----------------|
 | Notebooks | `notebooks/` | `notebooks-hpc/` |
-| LLM / embeddings | Ollama | vLLM via `rag-training2025-main/vllm/` |
+| LLM / embeddings | Ollama | vLLM via `hpc-logs/vllm/` |
 | Results CSV | `data/results/experimental/rag_results.csv` | `data/results/experimental/hpc_results.csv` |
 
 
@@ -166,17 +162,6 @@ data/results/experimental/rag_results.csv
 data/results/experimental/hpc_results.csv
 ```
 
-### Local vs HPC timing comparison
-
-After you have a curated local CSV and HPC results:
-
-```bash
-python scripts/compare_timing_local_hpc.py \
-  --local-csv data/results/final/rag_results.csv \
-  --hpc-csv data/results/experimental/hpc_results.csv \
-  --output-dir data/results/local_vs_hpc
-```
-
 ## Evaluation
 
 ### Manual Ground Truth (Strict)
@@ -240,10 +225,7 @@ The summary CSV contains the following columns, averaged per implementation:
 
 ### Visualizations
 
-Generate charts from the final results:
-
-- Local: `notebooks/rag_visualizations.ipynb`
-- HPC: `notebooks-hpc/rag_visualizations.ipynb`
+Generate charts from the final results with `notebooks/rag_visualizations.ipynb`.
 
 Figures are saved under `data/results/figures/` (and timing comparison figures under `data/results/local_vs_hpc/`).
 
@@ -253,6 +235,4 @@ Figures are saved under `data/results/figures/` (and timing comparison figures u
 - The `data/results/experimental/*.csv` files are generated during runs and are ignored by Git.
 - Only clean, final result files should be committed under `data/results/final/`.
 - Do not commit `.env`, `scripts/connection_info.txt`, or tokens in shell scripts.
-
-```
 

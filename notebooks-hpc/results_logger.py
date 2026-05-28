@@ -1,5 +1,9 @@
 """Append-or-update logging of RAG experiment runs to a shared results CSV.
 
+This is a copy of ``src/results_logger.py`` placed next to the HPC notebooks so
+they can ``import results_logger`` directly on Cyclone. Keep it in sync with the
+canonical version in ``src/``.
+
 Each notebook calls :func:`save_result_row` after a query so that every
 implementation/scenario pair is recorded once (re-running a scenario overwrites
 the previous row rather than duplicating it).

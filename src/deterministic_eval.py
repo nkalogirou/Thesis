@@ -1,3 +1,11 @@
+"""Automated, reproducible evaluation of the RAG results.
+
+Joins the generated answers with the manual ground-truth sheet and computes
+answer-quality metrics (ROUGE-L, BERTScore, sentence-embedding cosine
+similarity) and retrieval metrics (hit/precision/recall/F1), then writes a
+per-row CSV and a per-implementation summary.
+"""
+
 from __future__ import annotations
 
 import math
@@ -25,6 +33,8 @@ def normalize_text(text: str) -> str:
 
 
 def split_pipe_values(value: str) -> list[str]:
+    # Source/department lists are stored as a single pipe-delimited string in the
+    # results CSV; split them back into normalized (lowercased) values.
     if value is None or (isinstance(value, float) and math.isnan(value)):
         return []
     return [part.strip().lower() for part in str(value).split("|") if part.strip()]
@@ -50,6 +60,7 @@ def main():
     results_df = pd.read_csv(RESULTS_CSV)
     gt_df = pd.read_csv(GROUND_TRUTH_CSV)
 
+    # Inner join: only scenarios that have a manual ground-truth entry are scored.
     merged = results_df.merge(
         gt_df[
             [

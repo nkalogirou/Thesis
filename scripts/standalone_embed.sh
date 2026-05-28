@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Manage a local standalone Milvus container (Docker).
+# Usage: bash scripts/standalone_embed.sh start|stop|restart|delete
 
 set -e
 
